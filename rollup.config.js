@@ -9,17 +9,17 @@ const production = !process.env.ROLLUP_WATCH;
 const output = [
   // esm build
   {
-    file: "dist/index.mjs",
+    dir: "dist",
     format: "esm",
     exports: "named",
     sourcemap: true,
   },
   // cjs build
-  {
-    file: "dist/index.js",
-    format: "cjs",
-    sourcemap: true,
-  },
+  // {
+  //   dir: "dist",
+  //   format: "cjs",
+  //   sourcemap: true,
+  // },
 ];
 
 export default [
