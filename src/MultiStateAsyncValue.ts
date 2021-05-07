@@ -121,7 +121,7 @@ import { isEmptyValue, isNotEmptyValue } from './helpers';
    * @returns true if not in pending state and there is no error
    * it does not care if value is null or not
    */
-  get isFullfiled(): boolean {
+  get isFulfilled(): boolean {
     return !this._pending && !this._error;
   }
 

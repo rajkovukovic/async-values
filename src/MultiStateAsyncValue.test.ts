@@ -175,45 +175,45 @@ describe('Clone methods works as expected', function () {
   });
 });
 
-describe('multiStateAsyncValue.isFullfiled returns correct value', function () {
-  it('multiStateAsyncValue.isFullfiled returns false when error property is set', function () {
+describe('multiStateAsyncValue.isFulfilled returns correct value', function () {
+  it('multiStateAsyncValue.isFulfilled returns false when error property is set', function () {
     const sampleError = 'Sample error message';
     const samplePending = false;
     const sampleValue = 1;
     const instance = new MultiStateAsyncValue(sampleValue, samplePending, sampleError);
-    expect(instance.isFullfiled).toBeFalsy();
+    expect(instance.isFulfilled).toBeFalsy();
   });
 
-  it('multiStateAsyncValue.isFullfiled returns false when pending property is true', function () {
+  it('multiStateAsyncValue.isFulfilled returns false when pending property is true', function () {
     const sampleError = null;
     const samplePending = true;
     const sampleValue = 1;
     const instance = new MultiStateAsyncValue(sampleValue, samplePending, sampleError);
-    expect(instance.isFullfiled).toBeFalsy();
+    expect(instance.isFulfilled).toBeFalsy();
   });
 
-  it('multiStateAsyncValue.isFullfiled returns false when error property is set amd pending property is true', function () {
+  it('multiStateAsyncValue.isFulfilled returns false when error property is set amd pending property is true', function () {
     const sampleError = 'Sample error message';
     const samplePending = true;
     const sampleValue = 1;
     const instance = new MultiStateAsyncValue(sampleValue, samplePending, sampleError);
-    expect(instance.isFullfiled).toBeFalsy();
+    expect(instance.isFulfilled).toBeFalsy();
   });
 
-  it('multiStateAsyncValue.isFullfiled returns true when {error: null, pending: false, value: truthy}', function () {
+  it('multiStateAsyncValue.isFulfilled returns true when {error: null, pending: false, value: truthy}', function () {
     const sampleError = null;
     const samplePending = false;
     const sampleValue = 1;
     const instance = new MultiStateAsyncValue(sampleValue, samplePending, sampleError);
-    expect(instance.isFullfiled).toBeTruthy();
+    expect(instance.isFulfilled).toBeTruthy();
   });
 
-  it('multiStateAsyncValue.isFullfiled returns true when {error: null, pending: false, value: falsy}', function () {
+  it('multiStateAsyncValue.isFulfilled returns true when {error: null, pending: false, value: falsy}', function () {
     const sampleError = null;
     const samplePending = false;
     const sampleValue = null;
     const instance = new MultiStateAsyncValue(sampleValue, samplePending, sampleError);
-    expect(instance.isFullfiled).toBeTruthy();
+    expect(instance.isFulfilled).toBeTruthy();
   });
 });
 
