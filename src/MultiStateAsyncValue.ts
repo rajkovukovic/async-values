@@ -39,8 +39,6 @@ import { isEmptyValue, isNotEmptyValue } from './helpers';
    * Getters and Setters
    */
   get error(): AsyncError {
-    console.log('get error');
-    console.log(this._error);
     return this._error;
   }
 
@@ -85,11 +83,13 @@ import { isEmptyValue, isNotEmptyValue } from './helpers';
 
   cloneWithNoError(): MultiStateAsyncValue<T> {
     const clone = this.clone();
-    clone.error = null;
+    if (isNotEmptyValue(clone.error)) {
+      clone.error = null;
+    }
     return clone;
   }
 
-  cloneWithPending(nextPending: boolean): MultiStateAsyncValue<T> {
+  cloneAndSetPending(nextPending: boolean = true): MultiStateAsyncValue<T> {
     const clone = this.clone();
     clone.pending = Boolean(nextPending);
     return clone;
@@ -97,11 +97,13 @@ import { isEmptyValue, isNotEmptyValue } from './helpers';
 
   cloneWithNoPending(): MultiStateAsyncValue<T> {
     const clone = this.clone();
-    clone.pending = false;
+    if (clone.pending) {
+      clone.pending = false;
+    }
     return clone;
   }
 
-  cloneWithValue(value: T): MultiStateAsyncValue<T> {
+  cloneAndSetValue(value: T): MultiStateAsyncValue<T> {
     const clone = this.clone();
     clone.value = value;
     return clone;
@@ -109,7 +111,9 @@ import { isEmptyValue, isNotEmptyValue } from './helpers';
 
   cloneWithNoValue(): MultiStateAsyncValue<T> {
     const clone = this.clone();
-    clone.value = null;
+    if (isNotEmptyValue(clone.value)) {
+      clone.value = null;
+    }
     return clone;
   }
 

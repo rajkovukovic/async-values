@@ -12,14 +12,12 @@ export class AsyncValue<T> extends MultiStateAsyncValue<T> {
     error: ConvertibleToAsyncError = null,
   ) {
     super(value, pending, error);
-    if (Number(isNotEmptyValue(super._value)) + Number(Boolean(super._pending)) + Number(Boolean(super._error)) > 1)
+    if (Number(isNotEmptyValue(this.value)) + Number(Boolean(this.pending)) + Number(Boolean(this.error)) > 1)
       throw Error('Only one of "value", "pending", "error" can be truthy, but got: ' + JSON.stringify({
         value,
         pending,
         error,
       }));
-    console.log('AsyncValue.constructor');
-    console.log(this.error);
   }
 
   static errorOnly<T>(error: ConvertibleToAsyncError): AsyncValue<T> {
@@ -39,9 +37,10 @@ export class AsyncValue<T> extends MultiStateAsyncValue<T> {
   }
 
   set error(nextError: AsyncError) {
+    // use parent class error setter to convert to string | Error to AsyncError
     super.error = nextError;
-    if (super._pending) super._pending = false;
-    if (isNotEmptyValue(super._value)) super._value = null;
+    super._pending = false;
+    super._value = null;
   }
 
   get pending(): boolean {
@@ -49,9 +48,9 @@ export class AsyncValue<T> extends MultiStateAsyncValue<T> {
   }
 
   set pending(nextPending: boolean) {
-    super.pending = nextPending;
-    if (super._error) super._error = null;
-    if (isNotEmptyValue(super._value)) super._value = null;
+    super._pending = Boolean(nextPending);
+    super._error = null;
+    super._value = null;
   }
 
   get value(): T {
@@ -59,9 +58,15 @@ export class AsyncValue<T> extends MultiStateAsyncValue<T> {
   }
 
   set value(nextValue: T) {
-    super.value = nextValue;
-    if (super._pending) super._pending = false;
-    if (super._error) super._error = null;
+    super._value = nextValue;
+    super._error = null;
+    super._pending = false;
+  }
+
+  setErrorFrom(nextError: ConvertibleToAsyncError) {
+    super.setErrorFrom(nextError);
+    super._pending = false;
+    super._value = null;
   }
 
     /**

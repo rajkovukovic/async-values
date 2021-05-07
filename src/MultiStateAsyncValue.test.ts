@@ -108,20 +108,20 @@ describe('Clone methods works as expected', function () {
     expect(clone.value).toEqual(sampleValue);
   });
 
-  it('multiStateAsyncValue.cloneWithPending() works properly', function () {
+  it('multiStateAsyncValue.cloneAndSetPending() works properly', function () {
     const sampleError = 'Sample error message';
     const samplePending = true;
     const samplePending2 = false;
     const sampleValue = 1;
     const instance = new MultiStateAsyncValue(sampleValue, samplePending, sampleError);
 
-    const clone = instance.cloneWithPending(samplePending2);
+    const clone = instance.cloneAndSetPending(samplePending2);
     expect(instance === clone).toBeFalsy();
     expect(clone.error.message).toEqual(sampleError);
     expect(clone.pending).toEqual(samplePending2);
     expect(clone.value).toEqual(sampleValue);
 
-    const clone2 = clone.cloneWithPending(samplePending);
+    const clone2 = clone.cloneAndSetPending(samplePending);
     expect(clone2 === clone).toBeFalsy();
     expect(clone2.error.message).toEqual(sampleError);
     expect(clone2.pending).toEqual(samplePending);
@@ -141,20 +141,20 @@ describe('Clone methods works as expected', function () {
     expect(clone.value).toEqual(sampleValue);
   });
 
-  it('multiStateAsyncValue.cloneWithValue() works properly', function () {
+  it('multiStateAsyncValue.cloneAndSetValue() works properly', function () {
     const sampleError = 'Sample error message';
     const samplePending = true;
     const sampleValue = 1;
     const sampleValue2 = 1;
     const instance = new MultiStateAsyncValue(sampleValue, samplePending, sampleError);
 
-    const clone = instance.cloneWithValue(sampleValue2);
+    const clone = instance.cloneAndSetValue(sampleValue2);
     expect(instance === clone).toBeFalsy();
     expect(clone.error.message).toEqual(sampleError);
     expect(clone.pending).toEqual(samplePending);
     expect(clone.value).toEqual(sampleValue2);
 
-    const clone2 = clone.cloneWithValue(sampleValue);
+    const clone2 = clone.cloneAndSetValue(sampleValue);
     expect(clone2 === clone).toBeFalsy();
     expect(clone2.error.message).toEqual(sampleError);
     expect(clone2.pending).toEqual(samplePending);

@@ -1,6 +1,7 @@
-import { from, merge, Observable, ObservableInput, ObservedValueOf, of, OperatorFunction } from "rxjs";
-import { catchError, distinctUntilChanged, map, switchMap } from "rxjs/operators";
-import { AsyncValue, MultiStateAsyncValue } from "./AsyncValue";
+import { from, merge, Observable, of } from "rxjs";
+import { catchError, distinctUntilChanged, map } from "rxjs/operators";
+import { AsyncValue } from "./AsyncValue";
+import { MultiStateAsyncValue } from "./MultiStateAsyncValue";
 
 /**
  * 
@@ -16,11 +17,11 @@ export const promiseToAsyncValueStream = <T>(
 ): Observable<MultiStateAsyncValue<T>> => {
   return merge(
     // emit pending AsyncValue right away
-    of(AsyncValue.createPendingOnly()),
+    of(AsyncValue.pendingOnly()),
     // emit successfull AsyncValue or error AsyncValue when promise resolves
     from(promise).pipe(
-      map(value => AsyncValue.createValueOnly(value)),
-      catchError(error => of(AsyncValue.createErrorOnly<T>(error))),
+      map(value => AsyncValue.valueOnly(value)),
+      catchError(error => of(AsyncValue.errorOnly<T>(error))),
     )
   )
 }

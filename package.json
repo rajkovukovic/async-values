@@ -6,10 +6,13 @@
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "scripts": {
-    "dev": "rm -rf ./dist && rm -rf ./docs/lib && rollup -c -w",
-    "build": "rm -rf ./dist && rm -rf ./docs/lib && rollup -c",
+    "dev": "rm -rf ./dist && rollup -c -w",
+    "build": "rm -rf ./dist && rollup -c",
     "test": "jest",
     "coverage": "jest --coverage"
+  },
+  "peerDependencies": {
+    "rxjs": "6.x.x"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^17.1.0",
