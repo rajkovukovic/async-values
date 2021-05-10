@@ -1,10 +1,10 @@
 {
   "name": "async-values",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "license": "MIT",
   "author": "Rajko Vukovic",
   "main": "dist/index.js",
-  "module": "dist/index.mjs",
+  "module": "dist/index.js",
   "scripts": {
     "dev": "rm -rf ./dist && rollup -c -w",
     "build": "rm -rf ./dist && rollup -c",
