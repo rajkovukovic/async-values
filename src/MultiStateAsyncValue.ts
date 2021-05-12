@@ -23,16 +23,20 @@ import { isEmptyValue, isNotEmptyValue } from './helpers';
         : AsyncError.from(error);
   }
 
-  static errorOnly<T>(error: ConvertibleToAsyncError): MultiStateAsyncValue<T> {
+  static errorOnly<T = any>(error: ConvertibleToAsyncError): MultiStateAsyncValue<T> {
     return new MultiStateAsyncValue<T>(null, false, error);
   }
 
-  static pendingOnly<T>(): MultiStateAsyncValue<T> {
+  static pendingOnly<T = any>(): MultiStateAsyncValue<T> {
     return new MultiStateAsyncValue<T>(null, true);
   }
 
   static valueOnly<T>(value: T): MultiStateAsyncValue<T> {
     return new MultiStateAsyncValue<T>(value);
+  }
+
+  static createEmpty<T = any>(): MultiStateAsyncValue<T> {
+    return new MultiStateAsyncValue<T>();
   }
 
   /**

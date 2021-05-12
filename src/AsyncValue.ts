@@ -20,16 +20,20 @@ export class AsyncValue<T> extends MultiStateAsyncValue<T> {
       }));
   }
 
-  static errorOnly<T>(error: ConvertibleToAsyncError): AsyncValue<T> {
+  static errorOnly<T = any>(error: ConvertibleToAsyncError): AsyncValue<T> {
     return new AsyncValue<T>(null, false, error);
   }
 
-  static pendingOnly<T>(): AsyncValue<T> {
+  static pendingOnly<T = any>(): AsyncValue<T> {
     return new AsyncValue<T>(null, true);
   }
 
-  static valueOnly<T>(value: T): AsyncValue<T> {
+  static valueOnly<T = any>(value: T): AsyncValue<T> {
     return new AsyncValue<T>(value);
+  }
+
+  static createEmpty<T = any>(): MultiStateAsyncValue<T> {
+    return new AsyncValue<T>(null);
   }
 
   get error(): AsyncError {

@@ -11,13 +11,15 @@ export class AsyncError extends Error {
   }
 
   static from(error: ConvertibleToAsyncError) {
+    if (error instanceof AsyncError) return error;
+
     if (error instanceof Error) {
       const asyncError = new AsyncError(error.message);
       asyncError.stack = error.stack;
+      (asyncError as any).originalError = error;
+      return asyncError;
     }
 
-    return error instanceof AsyncError
-      ? error
-      : new AsyncError(String(error));
+    return new AsyncError(String(error))
   }
 }
