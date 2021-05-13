@@ -136,3 +136,5 @@ import { isEmptyValue, isNotEmptyValue } from './helpers';
     return isNotEmptyValue(this._value);
   }
 }
+
+export type GenericAsyncValue<T> = MultiStateAsyncValue<T>;
