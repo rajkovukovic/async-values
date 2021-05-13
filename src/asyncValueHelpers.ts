@@ -1,12 +1,47 @@
-import { combineLatest, from, merge, Observable, of, ObservableInput, OperatorFunction, ObservedValueOf } from "rxjs";
+import { combineLatest, from, merge, Observable, of, ObservableInput, MonoTypeOperatorFunction } from "rxjs";
 import { catchError, distinctUntilChanged, map, switchMap } from "rxjs/operators";
+import isPromise from "is-promise";
 import { AsyncValue } from "./AsyncValue";
 
+/**
+ * VoAV stands for "Value or AsyncValue".
+ * i.e. VoAV<number> is used where both, number and AsyncValue<number> are acceptable
+ */
+export type VoAV<T> = T | AsyncValue<T>
 
-export const compareAsyncValues = <T>(v1: AsyncValue<T>, v2: AsyncValue<T>): boolean => {
-  return v1.pending === v2.pending
-    && v1.error === v2.error
-    && v1.value === v2.value;
+/**
+ * VoAV stands for "Value or AsyncValue".
+ * PromiseLikeVoAV<T> is PromiseLike<VoAV<T>>
+ * i.e. Promise<VoAV<number>> is used where both, PromiseLike<number> and PromiseLike<AsyncValue<number>> are acceptable
+ */
+export type PromiseLikeVoAV<T> = PromiseLike<VoAV<T>>
+
+/**
+ * VoAV stands for "Value or AsyncValue".
+ * ObservableVoAV<T> is Observable<VoAV<T>>
+ * i.e. Promise<VoAV<number>> is used where both, Observable<number> and Observable<AsyncValue<number>> are acceptable
+ */
+export type ObservableVoAV<T> = Observable<VoAV<T>>
+
+/**
+ * async values are equal if their errors are equal '==='
+ * or their pendings are equal
+ * or their values are equal '==='
+ * 
+ * if @compare function is provided, it
+ * it will be used to compare value properites instead of ===
+ */
+export function compareAsyncValues<T>(
+  a1: AsyncValue<T>,
+  a2: AsyncValue<T>,
+  compare?: (v1: T, v2: T) => boolean,
+): boolean {
+  return a1 === a2 ||
+    (
+      a1.pending === a2.pending
+      && a1.error === a2.error
+      && compare ? compare(a1.value, a2.value) : a1.value === a2.value
+    );
 }
 
 export function convertToAsyncValue<T>(value: T | AsyncValue<T>): AsyncValue<T> {
@@ -25,20 +60,22 @@ export function convertToAsyncValue<T>(value: T | AsyncValue<T>): AsyncValue<T> 
  * 'p---v' | 'p---e'
  */
 export function promiseToAsyncValueStream <T>(
-  promise: Promise<T>
+  promise: PromiseLike<T | AsyncValue<T>>
 ): Observable<AsyncValue<T>> {
   return merge(
     // emit pending AsyncValue right away
     of(AsyncValue.pendingOnly()),
     // emit successfull AsyncValue or error AsyncValue when promise resolves
     from(promise).pipe(
-      map(value => AsyncValue.valueOnly(value)),
+      map(value => convertToAsyncValue(value)),
       catchError(error => of(AsyncValue.errorOnly<T>(error))),
     )
   )
 }
 
 /**
+ * this is an RXJS Operator
+ * 
  * maps all stream elements of type T to AsyncValue<T>
  * if stream emits an error, AsyncValue.errorOnly(error) will be emitted
  */
@@ -53,7 +90,22 @@ export function mapToAsyncValue<T>(
   }
 }
 
-export const distinctAsyncValueUntilChanged = () => distinctUntilChanged(compareAsyncValues);
+/**
+ * this is an RXJS Operator
+ * 
+ * prevents emitting of duplicate AsyncValues
+ * async values are duplicates if their errors are equal '==='
+ * or their pendings are equal
+ * or their values are equal '==='
+ * 
+ * if @compare function is provided, it
+ * it will be used to compare value properites instead of ===
+ */
+export function distinctAsyncValueUntilChanged<T>(
+  compare?: (v1: T, v2: T) => boolean
+) {
+  return distinctUntilChanged((a1: AsyncValue<T>, a2: AsyncValue<T>) => compareAsyncValues(a1, a2, compare));
+}
 
 /**
  * if @source is an AsyncValue containing error
@@ -69,7 +121,7 @@ export const distinctAsyncValueUntilChanged = () => distinctUntilChanged(compare
  */
 function transformWhenFulfilled<T, R>(
   source: AsyncValue<T>,
-  transformFnOrResult: AsyncValue<R> | R | ((sourceValue: T, index?: number) => R),
+  transformFnOrResult: VoAV<R> | ((sourceValue: T, index?: number) => R),
   index?: number,
 ): AsyncValue<R> {
 
@@ -130,7 +182,7 @@ export function internalCombineAsyncValues<T, R>(
  */
 export function combineAsyncValues<T, R>(
   sources: any[],
-  combinerOrResult: ((sourceValues: T[]) => R) | AsyncValue<R> | R,
+  combinerOrResult: ((sourceValues: T[]) => R) | VoAV<R>,
 ): AsyncValue<R> {
 
   return convertToAsyncValue(internalCombineAsyncValues(sources, combinerOrResult));
@@ -140,7 +192,7 @@ export function combineAsyncValues<T, R>(
  * this is an RXJS Operator
  */
 export function mapToWhenFulfilled<T, R>(
-  outputValue: AsyncValue<R> | R,
+  outputValue: VoAV<R>,
 ): (source: Observable<AsyncValue<T>>) => Observable<AsyncValue<R>> {
 
   return function(source: Observable<AsyncValue<T>>) {
@@ -171,7 +223,7 @@ export function mapToWhenFulfilled<T, R>(
  * otherwise @combinerOrResult, converted to AsyncValue if already not one, will be emitted
  */
 export function mapWhenFulfilled<T, R>(
-  transformFnOrResult: AsyncValue<R> | R | ((sourceValue: T, index?: number) => R)
+  transformFnOrResult: VoAV<R> | ((sourceValue: T, index?: number) => R)
 ): (source: Observable<AsyncValue<T>>) => Observable<AsyncValue<R>> {
 
   return function(source: Observable<AsyncValue<T>>) {
@@ -183,19 +235,39 @@ export function mapWhenFulfilled<T, R>(
 
 /**
  * this is an RXJS Operator
+ * 
+ * if @source is in error or pending state, clone of the AsyncValue will be emitted
+ * 
+ * otherwise if @transformFn is a Function
+ * @transformFn (AsyncValue<fulfilled>) will became new inner observable
+ * and every value it emits will be mapped to AsyncValue
  */
 export function switchMapWhenFulfilled<T, R>(
-  transformFn: ((sourceValue: T) => Promise<ObservableInput<AsyncValue<R>>> | Observable<ObservableInput<AsyncValue<R>>>)
+  transformFn: ((sourceValue: T) => PromiseLikeVoAV<R> | ObservableVoAV<R> | VoAV<R>)
 ): (source: Observable<AsyncValue<T>>) => Observable<AsyncValue<R>> {
 
   return function(source: Observable<AsyncValue<T>>) {
     return source.pipe(
       switchMap(
-        asyncValue =>
-          asyncValue.isFulfilled
-            ? from(transformFn(asyncValue.value))
-            : of(asyncValue.cloneWithNoValue() as any)
-      )
+        asyncValue => {
+          if (!asyncValue.isFulfilled) {
+            return of(asyncValue.cloneWithNoValue() as any);
+          } else {
+            const result = transformFn(asyncValue.value)
+            // if transformFn function returns a Promise
+            if (isPromise(result)) {
+              return promiseToAsyncValueStream(result);
+            }
+            // if transformFn function returns an Observable
+            else if (result instanceof Observable) {
+              return result.pipe(mapToAsyncValue<R>());
+            }
+            // if transformFn function returns non-async data
+            else {
+              return of(convertToAsyncValue(result))
+            }
+          }
+        })
     );
   }
 }
@@ -222,7 +294,7 @@ export function switchMapWhenFulfilled<T, R>(
  */
 export function combineLatestWhenAllFulfilled<T, R>(
   sources: Observable<AsyncValue<T> | T>[],
-  combinerOrResult: ((sourceValues: T[]) => R | PromiseLike<R> | Observable<R>) | AsyncValue<R> | R,
+  combinerOrResult: ((sourceValues: T[]) => R | PromiseLikeVoAV<R> | ObservableVoAV<R>) | VoAV<R>,
 ): Observable<AsyncValue<R>> {
 
   return combineLatest(sources)
@@ -231,8 +303,8 @@ export function combineLatestWhenAllFulfilled<T, R>(
         const result = internalCombineAsyncValues(inputs, combinerOrResult);
         if (typeof combinerOrResult === 'function') {
           // if combinerOrResult function returns a Promise
-          if (typeof (result as any)?.then === 'function') {
-            return promiseToAsyncValueStream(result as unknown as Promise<R>);
+          if (isPromise(result)) {
+            return promiseToAsyncValueStream(result);
           }
           // if combinerOrResult function returns an Observable
           if (result instanceof Observable) {
@@ -248,7 +320,7 @@ export function combineLatestWhenAllFulfilled<T, R>(
  * this is an RXJS Operator
  */
 export function transformWhenAllFulfilled<T, R>(
-  transformFnOrResult: ((sourceValues: T[]) => R) | AsyncValue<R> | R,
+  transformFnOrResult: ((sourceValues: T[]) => R) | VoAV<R>,
 ): (sources: Observable<AsyncValue<T>>[]) => Observable<AsyncValue<R>> {
 
   return function(sources: Observable<AsyncValue<T>>[]) {
