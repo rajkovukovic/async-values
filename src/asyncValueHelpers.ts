@@ -311,7 +311,14 @@ export function combineLatestWhenAllFulfilled<T, R>(
             return result.pipe(mapToAsyncValue<R>())
           }
         }
-        return of(convertToAsyncValue(result as R))
+        // if combinerOrResult function returns an Observable
+        else if (result instanceof Observable) {
+          return result.pipe(mapToAsyncValue<R>())
+        }
+        // }
+        else {
+          return of(convertToAsyncValue(result as R))
+        }
       })
     );
 }
