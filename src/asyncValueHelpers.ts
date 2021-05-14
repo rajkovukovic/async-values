@@ -38,6 +38,12 @@ export function isFulfilledOrSync(value): boolean {
   return !(value instanceof AsyncValue) || value.isFulfilled;
 }
 
+export function getSyncValue<T>(voAv: VoAV<T>): T {
+  return voAv instanceof AsyncValue
+    ? voAv.value
+    : voAv;
+}
+
 /**
  * async values are equal if their errors are equal '==='
  * or their pendings are equal
@@ -265,9 +271,6 @@ export function mapWhenFulfilled<T, R>(
 function internal_map_AsyncLike_to_Observable<T>(
   value: VoAV<T> | PromiseLikeVoAV<T> | ObservableVoAV<T>
 ): Observable<AsyncValue<T>> {
-  // if (isFulfilledOrSync(value)) {
-  //   debugger;
-  // }
 
   // if an Observable
   if (isObservable(value)) {
@@ -298,24 +301,25 @@ export function switchMapWhenFulfilled<T, R>(
   transformFnOrValue:
     ((sourceValue: T) => VoAV<R> | PromiseLikeVoAV<R> | ObservableVoAV<R>)
     | VoAV<R> | PromiseLikeVoAV<R> | ObservableVoAV<R>
-): (source: Observable<AsyncValue<T>>) => Observable<AsyncValue<R>> {
+): (source: Observable<VoAV<T>>) => Observable<AsyncValue<R>> {
 
   return function(source: Observable<AsyncValue<T>>) {
     return source.pipe(
       switchMap(
-        asyncValue => {
+        voAv => {
 
           // when one of the sources is not fulfilled yet
-          if (!isFulfilledOrSync(asyncValue)) {
-            return of(asyncValue.cloneWithNoValue() as unknown as AsyncValue<R>);
+          if (!isFulfilledOrSync(voAv)) {
+            return of(voAv.cloneWithNoValue() as unknown as AsyncValue<R>);
           }
 
           // when all sources are fulfilled,
           // combine their values into one
           // and return the value as a stream
           else {
+            const syncValue = getSyncValue(voAv)
             const transformed = transformFnOrValue instanceof Function
-              ? transformFnOrValue(asyncValue.value)
+              ? transformFnOrValue(syncValue)
               : transformFnOrValue;
 
             return internal_map_AsyncLike_to_Observable(transformed);
