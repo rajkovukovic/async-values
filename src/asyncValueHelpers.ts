@@ -1,4 +1,4 @@
-import { combineLatest, from, merge, Observable, of, ObservableInput, MonoTypeOperatorFunction } from "rxjs";
+import { combineLatest, from, isObservable, merge, Observable, of } from "rxjs";
 import { catchError, distinctUntilChanged, map, switchMap } from "rxjs/operators";
 import isPromise from "is-promise";
 import { AsyncValue } from "./AsyncValue";
@@ -22,6 +22,27 @@ export type PromiseLikeVoAV<T> = PromiseLike<VoAV<T>>
  * i.e. Promise<VoAV<number>> is used where both, Observable<number> and Observable<AsyncValue<number>> are acceptable
  */
 export type ObservableVoAV<T> = Observable<VoAV<T>>
+
+/**
+ * VoAV stands for "Value or AsyncValue".
+ * AsyncLikeVoAV<T> = VoAV<T> | PromiseLikeVoAV<T>
+ */
+export type AsyncLikeVoAV<T> = VoAV<T> | ObservableVoAV<T> | ObservableVoAV<T>
+
+
+/**
+ * returns true when value is not of type AsyncValue 
+ * or is an AsyncFalue and it is fulfilled
+ */
+export function isFulfilledOrSync(value): boolean {
+  return !(value instanceof AsyncValue) || value.isFulfilled;
+}
+
+export function getSyncValue<T>(voAv: VoAV<T>): T {
+  return voAv instanceof AsyncValue
+    ? voAv.value
+    : voAv;
+}
 
 /**
  * async values are equal if their errors are equal '==='
@@ -59,7 +80,7 @@ export function convertToAsyncValue<T>(value: T | AsyncValue<T>): AsyncValue<T> 
  * // marble diagram (p: Pending, v: Value, e: Error):
  * 'p---v' | 'p---e'
  */
-export function promiseToAsyncValueStream <T>(
+export function promiseToAsyncValueStream<T>(
   promise: PromiseLike<T | AsyncValue<T>>
 ): Observable<AsyncValue<T>> {
   return merge(
@@ -80,11 +101,24 @@ export function promiseToAsyncValueStream <T>(
  * if stream emits an error, AsyncValue.errorOnly(error) will be emitted
  */
 export function mapToAsyncValue<T>(
-): (source: Observable<T>) => Observable<AsyncValue<T>> {
+): (source: Observable<VoAV<T>>) => Observable<AsyncValue<T>> {
 
   return function(source: Observable<T>) {
     return source.pipe(
-      map(value => convertToAsyncValue(value)),
+      switchMap(value => {
+
+        if (isObservable(value)) {
+          return value.pipe(mapToAsyncValue<T>());
+        }
+
+        else if (isPromise(value)) {
+          return promiseToAsyncValueStream<T>(value as any).pipe(mapToAsyncValue());
+        }
+
+        else {
+         return of(convertToAsyncValue(value));
+        }
+      }),
       catchError(e => of(AsyncValue.errorOnly(e))),
     )
   }
@@ -131,8 +165,8 @@ function transformWhenFulfilled<T, R>(
   if (source instanceof AsyncValue && source.pending)
     return AsyncValue.pendingOnly();
 
-  return typeof transformFnOrResult === 'function'
-      ? convertToAsyncValue((transformFnOrResult as Function)(source.value, index))
+  return transformFnOrResult instanceof Function
+      ? convertToAsyncValue(transformFnOrResult(source.value, index))
       : convertToAsyncValue(transformFnOrResult);
 }
 
@@ -144,14 +178,14 @@ function transformWhenFulfilled<T, R>(
  * otherwise if any of @sources is an AsyncValue in pending state
  * new AsyncValue.pendingOnly() will be returned
  * 
- * otherwise, when fulfilled, if @combinerOrResult is a function
- * @combinerOrResult(sources) will be returned
+ * otherwise, when fulfilled, if @reducerOrResult is a function
+ * @reducerOrResult(sources) will be returned
  * 
- * otherwise @combinerOrResult will be returned
+ * otherwise @reducerOrResult will be returned
  */
-export function internalCombineAsyncValues<T, R>(
+export function internalReduceAsyncValues<T, R>(
   sources: any[],
-  combinerOrResult: ((sourceValues: T[]) => R) | AsyncValue<R> | R,
+  reducerOrResult: ((sourceValues: T[]) => R) | AsyncValue<R> | R,
 ): AsyncValue<R> | R {
 
   for (const source of sources) {
@@ -162,9 +196,9 @@ export function internalCombineAsyncValues<T, R>(
     if (source instanceof AsyncValue && source.pending) return AsyncValue.pendingOnly();
   }
 
-  return typeof combinerOrResult === 'function'
-    ? (combinerOrResult as Function)(sources.map(s => s instanceof AsyncValue ? s.value : s))
-    : convertToAsyncValue(combinerOrResult);
+  return reducerOrResult instanceof Function
+    ? reducerOrResult(sources.map(s => s instanceof AsyncValue ? s.value : s))
+    : convertToAsyncValue(reducerOrResult);
 }
 
 /**
@@ -175,17 +209,17 @@ export function internalCombineAsyncValues<T, R>(
  * otherwise if any of @sources is an AsyncValue in pending state
  * new AsyncValue.pendingOnly() will be returned
  * 
- * otherwise, when fulfilled, if @combinerOrResult is a function
- * @combinerOrResult(sources), converted to AsyncValue if already not one, will be returned
+ * otherwise, when fulfilled, if @reducerOrResult is a function
+ * @reducerOrResult(sources), converted to AsyncValue if already not one, will be returned
  * 
- * otherwise @combinerOrResult, converted to AsyncValue if already not one, will be returned
+ * otherwise @reducerOrResult, converted to AsyncValue if already not one, will be returned
  */
-export function combineAsyncValues<T, R>(
+export function reduceAsyncValues<T, R>(
   sources: any[],
-  combinerOrResult: ((sourceValues: T[]) => R) | VoAV<R>,
+  reducerOrResult: ((sourceValues: T[]) => R) | VoAV<R>,
 ): AsyncValue<R> {
 
-  return convertToAsyncValue(internalCombineAsyncValues(sources, combinerOrResult));
+  return convertToAsyncValue(internalReduceAsyncValues(sources, reducerOrResult));
 }
 
 /**
@@ -193,12 +227,12 @@ export function combineAsyncValues<T, R>(
  */
 export function mapToWhenFulfilled<T, R>(
   outputValue: VoAV<R>,
-): (source: Observable<AsyncValue<T>>) => Observable<AsyncValue<R>> {
+): (source: Observable<VoAV<T>>) => Observable<AsyncValue<R>> {
 
   return function(source: Observable<AsyncValue<T>>) {
     return source.pipe(
       map(value =>
-        value.isFulfilled
+        isFulfilledOrSync(value)
           ? outputValue instanceof AsyncValue
             ? outputValue
             : AsyncValue.valueOnly(outputValue)
@@ -233,6 +267,27 @@ export function mapWhenFulfilled<T, R>(
   }
 }
 
+
+function internal_map_AsyncLike_to_Observable<T>(
+  value: VoAV<T> | PromiseLikeVoAV<T> | ObservableVoAV<T>
+): Observable<AsyncValue<T>> {
+
+  // if an Observable
+  if (isObservable(value)) {
+    return value.pipe(mapToAsyncValue<T>());
+  }
+
+  // if a Promise
+  else if (isPromise(value)) {
+    return promiseToAsyncValueStream(value);
+  }
+
+  // if non-async
+  else {
+    return of(convertToAsyncValue(value))
+  }
+}
+
 /**
  * this is an RXJS Operator
  * 
@@ -240,32 +295,34 @@ export function mapWhenFulfilled<T, R>(
  * 
  * otherwise if @transformFn is a Function
  * @transformFn (AsyncValue<fulfilled>) will became new inner observable
- * and every value it emits will be mapped to AsyncValue
+ * and every value it emits will be mapped to an AsyncValue
  */
 export function switchMapWhenFulfilled<T, R>(
-  transformFn: ((sourceValue: T) => PromiseLikeVoAV<R> | ObservableVoAV<R> | VoAV<R>)
-): (source: Observable<AsyncValue<T>>) => Observable<AsyncValue<R>> {
+  transformFnOrValue:
+    ((sourceValue: T) => VoAV<R> | PromiseLikeVoAV<R> | ObservableVoAV<R>)
+    | VoAV<R> | PromiseLikeVoAV<R> | ObservableVoAV<R>
+): (source: Observable<VoAV<T>>) => Observable<AsyncValue<R>> {
 
   return function(source: Observable<AsyncValue<T>>) {
     return source.pipe(
       switchMap(
-        asyncValue => {
-          if (!asyncValue.isFulfilled) {
-            return of(asyncValue.cloneWithNoValue() as any);
-          } else {
-            const result = transformFn(asyncValue.value)
-            // if transformFn function returns a Promise
-            if (isPromise(result)) {
-              return promiseToAsyncValueStream(result);
-            }
-            // if transformFn function returns an Observable
-            else if (result instanceof Observable) {
-              return result.pipe(mapToAsyncValue<R>());
-            }
-            // if transformFn function returns non-async data
-            else {
-              return of(convertToAsyncValue(result))
-            }
+        voAv => {
+
+          // when one of the sources is not fulfilled yet
+          if (!isFulfilledOrSync(voAv)) {
+            return of(voAv.cloneWithNoValue() as unknown as AsyncValue<R>);
+          }
+
+          // when all sources are fulfilled,
+          // combine their values into one
+          // and return the value as a stream
+          else {
+            const syncValue = getSyncValue(voAv)
+            const transformed = transformFnOrValue instanceof Function
+              ? transformFnOrValue(syncValue)
+              : transformFnOrValue;
+
+            return internal_map_AsyncLike_to_Observable(transformed);
           }
         })
     );
@@ -292,26 +349,18 @@ export function switchMapWhenFulfilled<T, R>(
  * otherwise @combinerOrResult, converted to AsyncValue if already not one,
  * will be emitted
  */
-export function combineLatestWhenAllFulfilled<T, R>(
-  sources: Observable<AsyncValue<T> | T>[],
-  combinerOrResult: ((sourceValues: T[]) => R | PromiseLikeVoAV<R> | ObservableVoAV<R>) | VoAV<R>,
+export function combineLatestWhenAllFulfilled<T extends any, R>(
+  sources: Observable<VoAV<T>>[],
+  combinerOrResult:
+    ((sourceValues: T[]) => VoAV<R> | PromiseLikeVoAV<R> | ObservableVoAV<R>)
+    | VoAV<R> | PromiseLikeVoAV<R> | ObservableVoAV<R>,
 ): Observable<AsyncValue<R>> {
 
   return combineLatest(sources)
     .pipe(
       switchMap((inputs) => {
-        const result = internalCombineAsyncValues(inputs, combinerOrResult);
-        if (typeof combinerOrResult === 'function') {
-          // if combinerOrResult function returns a Promise
-          if (isPromise(result)) {
-            return promiseToAsyncValueStream(result);
-          }
-          // if combinerOrResult function returns an Observable
-          if (result instanceof Observable) {
-            return result.pipe(mapToAsyncValue<R>())
-          }
-        }
-        return of(convertToAsyncValue(result as R))
+        const combined = internalReduceAsyncValues(inputs, combinerOrResult);
+        return internal_map_AsyncLike_to_Observable(combined) as Observable<AsyncValue<R>>;
       })
     );
 }
@@ -326,7 +375,7 @@ export function transformWhenAllFulfilled<T, R>(
   return function(sources: Observable<AsyncValue<T>>[]) {
     return combineLatest(sources)
       .pipe(
-        map((inputs) => combineAsyncValues(inputs, transformFnOrResult))
+        map((inputs) => reduceAsyncValues(inputs, transformFnOrResult))
       );
   }
 }

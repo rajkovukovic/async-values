@@ -6,6 +6,26 @@ import { isEmptyValue, isNotEmptyValue } from './helpers';
  * of its properties [value, pending, error] being truthy simultaneously
  */
  export class MultiStateAsyncValue<T> {
+  private static _loggedErrors = new Set();
+  private static _consoleErrorLogger(error: Error) {
+    console.error(error)
+  }
+
+  static errorHanlder?: ((error: Error) => void) = MultiStateAsyncValue._consoleErrorLogger;
+
+  static logErrorsToConsole(shouldLog = true) {
+    MultiStateAsyncValue.errorHanlder = shouldLog
+      ? MultiStateAsyncValue._consoleErrorLogger
+      : null
+  }
+
+  private static _handleError(error: Error) {
+    if (!MultiStateAsyncValue._loggedErrors.has(error)) {
+      MultiStateAsyncValue._loggedErrors.add(error);
+      MultiStateAsyncValue.errorHanlder?.call(null, error);
+    }
+  }
+
   protected _error: Error;
   protected _pending: boolean;
   protected _value: T;
@@ -21,6 +41,7 @@ import { isEmptyValue, isNotEmptyValue } from './helpers';
       isEmptyValue(error)
         ? null
         : AsyncError.from(error);
+    if (this._error) MultiStateAsyncValue._handleError(this._error);
   }
 
   static errorOnly<T = any>(error: ConvertibleToAsyncError): MultiStateAsyncValue<T> {
@@ -54,6 +75,7 @@ import { isEmptyValue, isNotEmptyValue } from './helpers';
     this._error = isEmptyValue(nextError)
       ? null
       : AsyncError.from(nextError);
+    if (this._error) MultiStateAsyncValue._handleError(this._error);
   }
 
   get pending(): boolean {
