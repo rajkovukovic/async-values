@@ -359,22 +359,7 @@ export function combineLatestWhenAllFulfilled<T extends any, R>(
   return combineLatest(sources)
     .pipe(
       switchMap((inputs) => {
-        const result = internalCombineAsyncValues(inputs, combinerOrResult);
-        if (typeof combinerOrResult === 'function') {
-          // if combinerOrResult function returns a Promise
-          if (isPromise(result)) {
-            return promiseToAsyncValueStream(result);
-          }
-          // if combinerOrResult function returns an Observable
-          if (result instanceof Observable) {
-            return result.pipe(mapToAsyncValue<R>())
-          }
-        }
-        // if combinerOrResult function returns an Observable
-        else if (result instanceof Observable) {
-          return result.pipe(mapToAsyncValue<R>())
-        }
-        // }
+        const combined = internalReduceAsyncValues(inputs, combinerOrResult);
         return internal_map_AsyncLike_to_Observable(combined) as Observable<AsyncValue<R>>;
       })
     );
