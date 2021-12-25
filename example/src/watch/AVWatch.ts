@@ -1,11 +1,17 @@
 import { BehaviorSubject, combineLatest, firstValueFrom, Observable } from 'rxjs';
 import { tap, map, distinctUntilChanged, shareReplay, filter, switchMap } from 'rxjs/operators';
+import type { RxCollection } from 'rxdb';
 import { dbStream } from './db';
 
 export enum AVStreamEventType {
 	value = 'value',
 	error = 'error',
-	complete = 'complete',
+	complete = 'complete'
+}
+
+export interface StreamRenderingInfo {
+	name: string;
+	phases: string[];
 }
 
 export class AVStreamEvent {
@@ -33,7 +39,7 @@ class AVWatchClass {
 	 * collection of events wrapped in BehaviorSubject
 	 * BehaviorSubject is used to notify all listeners when database changes
 	 */
-	private _eventsCollection = new BehaviorSubject(null);
+	private _eventsCollection = new BehaviorSubject<RxCollection<any, any, any, any>>(null);
 
 	private _eventsBuffer = [];
 
@@ -42,18 +48,16 @@ class AVWatchClass {
 	 */
 	private _streams: BehaviorSubject<Map<string, Set<string>>> = new BehaviorSubject(new Map());
 	private _streamNameQuery = new BehaviorSubject<string>('');
-	private _visibleStreams = combineLatest([this._streams, this._streamNameQuery]).pipe(
-		map(([streams, query]) =>
-			(query
-				? Array.from(streams.keys()).filter((name) => name.toLocaleLowerCase().includes(query))
-				: Array.from(streams.keys())
-			).sort()
+	private _visibleStreams = this._streams.pipe(
+		map((streams: Map<string, Set<string>>) =>
+			Array.from(streams.entries()).sort((a, b) =>
+				a[0].toLocaleLowerCase().localeCompare(b[0].toLocaleLowerCase())
+			)
 		),
-		distinctUntilChanged((a, b) => a.join() === b.join()),
-		map((streamNames) =>
-			streamNames.map((streamName) => ({
+		map((streams) =>
+			streams.map(([streamName, streamPhases]) => ({
 				name: streamName,
-				phases: Array.from(this._streams.value.get(streamName))
+				phases: Array.from(streamPhases.values())
 			}))
 		),
 		shareReplay(1)
@@ -62,7 +66,7 @@ class AVWatchClass {
 	constructor() {
 		this._initTimestamp = Date.now();
 		firstValueFrom(dbStream)
-			.then(db => {
+			.then((db) => {
 				console.log('db init success');
 				this._eventsCollection.next(db.events);
 				if (this._eventsBuffer.length > 0) {
@@ -73,7 +77,7 @@ class AVWatchClass {
 			.catch((error) => console.error(error));
 	}
 
-	private internalAddEvent(event: AVStreamEvent) {
+	public addEvent(event: AVStreamEvent) {
 		if (this._eventsCollection.value) {
 			return this._eventsCollection.value.insert(event);
 		} else {
@@ -81,25 +85,24 @@ class AVWatchClass {
 		}
 	}
 
-	public addEvent(event: AVStreamEvent) {
+	public addWatch(streamName: string, streamPhase: string) {
 		const existingStreams = this._streams.value;
-		if (!existingStreams.has(event.streamName)) {
-			existingStreams.set(event.streamName, new Set());
+
+		if (!existingStreams.has(streamName)) {
+			existingStreams.set(streamName, new Set());
 		}
 
-		if (!existingStreams.get(event.streamName).has(event.streamPhase)) {
-			existingStreams.get(event.streamName).add(event.streamPhase);
+		if (!existingStreams.get(streamName).has(streamPhase)) {
+			existingStreams.get(streamName).add(streamPhase);
 			this._streams.next(this._streams.value);
 		}
-
-		return this.internalAddEvent(event);
 	}
 
 	public filterByStreamName(query: string) {
 		this._streamNameQuery.next(query.trim().toLocaleLowerCase());
 	}
 
-	public get visibleStreams() {
+	public get visibleStreams(): Observable<StreamRenderingInfo[]> {
 		return this._visibleStreams;
 	}
 
@@ -119,7 +122,8 @@ class AVWatchClass {
 export const AVWatch = new AVWatchClass();
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export function watch(streamName: string, streamPhase?: string) {
+export function watch(streamName: string, streamPhase: string) {
+	AVWatch.addWatch(streamName, streamPhase);
 	return tap(
 		// onNext
 		(value) => {
