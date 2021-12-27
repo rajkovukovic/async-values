@@ -1,11 +1,5 @@
 <script lang="ts">
-  import { interval } from 'rxjs';
-  import { AVWatch, watch } from '../watch/AVWatch';
-  import MarblesView from '../watch/MarblesView/MarblesView.svelte';
-
+  import EventsView from '../watch/EventsView/EventsView.svelte';
 </script>
 
-<MarblesView
-  eventsCollectionStream={AVWatch.eventsCollection}
-  visibleStreamsStream={AVWatch.visibleStreams}
-/>
+<EventsView />
