@@ -5,14 +5,8 @@
 </script>
 
 <g class:rotate={pending && !error}>
-  <circle
-    fill="none"
-    stroke="silver"
-    stroke-width="1.2"
-    stroke-dasharray="4 4"
-    r={size * 0.7}
-  />
-  <!-- <g
+	<circle fill="none" stroke="silver" stroke-width="1.2" stroke-dasharray="4 4" r={size * 0.7} />
+	<!-- <g
     class="animation-container"
     class:rotate={pending && !error}
     on:click
@@ -33,29 +27,31 @@
       />
     </g>
   </g> -->
-  <circle
-    class:pulse={pending && !error}
-    fill={error ? '#9B3030' : pending ? 'silver' : '#007ACC'}
-    r={size * 0.5}
-  />
+	<circle
+		class:pulse={pending && !error}
+		fill={error ? '#9B3030' : pending ? 'silver' : '#007ACC'}
+		r={size * 0.5}
+	/>
 </g>
 
 <style>
 	.rotate {
+		opacity: 0.4;
 		animation: rotate 8s infinite linear;
 	}
 
 	.pulse {
-		transform: scale(0.7);
+		/* transform: scale(0.7); */
+		display: none;
 		/* animation: pulse 2s infinite ease-out; */
 	}
 
 	@keyframes rotate {
 		from {
-			transform: scale(0.5) rotate(0deg);
+			transform: scale(1) rotate(0deg);
 		}
 		to {
-			transform: scale(0.5) rotate(360deg);
+			transform: scale(1) rotate(360deg);
 		}
 	}
 

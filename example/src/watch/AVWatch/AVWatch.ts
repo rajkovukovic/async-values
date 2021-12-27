@@ -6,7 +6,6 @@ import { AVStreamEvent } from './AVStreamEvent';
 import type { StreamRenderingInfo } from './StreamRenderingInfo';
 import { AVStreamEventType } from './AVStreamEventType';
 import { StreamWatcher } from './StreamWatcher';
-import type { StreamPhaseWatcher } from './StreamPhaseWatcher';
 
 export * from './AVStreamEvent';
 export * from './StreamRenderingInfo';
@@ -91,6 +90,42 @@ class AVWatchClass {
 
 	public get visibleStreams(): Observable<StreamRenderingInfo[]> {
 		return this._visibleStreams;
+	}
+
+	/**
+	 * @param eventId - id of current event
+	 * @param offset - i.e. if offset=-1, find previous event of same phase
+	 * @returns AVStreamEvent if found, null otherwise
+	 */
+	public eventInSamePhase(eventId: number, offset: number) {
+		if (Number.isFinite(eventId)) {
+			const events = this._events.value;
+			const currentEvent = events[eventId];
+
+			if (offset > 0) {
+				for (let index = eventId + 1; index < events.length; index++) {
+					if (
+						events[index].streamName === currentEvent.streamName &&
+						events[index].streamPhase === currentEvent.streamPhase
+					) {
+						offset--;
+						if (offset <= 0) return events[index];
+					}
+				}
+			} else {
+				for (let index = eventId - 1; index >= 0; index--) {
+					if (
+						events[index].streamName === currentEvent.streamName &&
+						events[index].streamPhase === currentEvent.streamPhase
+					) {
+						offset++;
+						if (offset >= 0) return events[index];
+					}
+				}
+			}
+		}
+
+		return null;
 	}
 }
 
