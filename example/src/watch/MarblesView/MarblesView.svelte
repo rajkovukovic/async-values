@@ -1,8 +1,8 @@
 <script lang="ts">
 	import animateScrollTo from 'animated-scroll-to';
 	import type { RxCollection } from 'rxdb';
-	import { Observable, interval, BehaviorSubject } from 'rxjs';
-	import { distinctUntilChanged, filter, map, shareReplay, take } from 'rxjs/operators';
+	import { Observable, interval, BehaviorSubject, of, throwError } from 'rxjs';
+	import { catchError, distinctUntilChanged, filter, map, shareReplay, switchMap, take } from 'rxjs/operators';
 	import { afterUpdate, beforeUpdate } from 'svelte';
 	import { watch } from '../../watch/AVWatch';
 	import type { AVStreamEvent, StreamRenderingInfo } from '../../watch/AVWatch';
@@ -10,32 +10,39 @@
 	import MarblesViewRowHeaders from './MarblesViewRowHeaders.svelte';
 	import MarblesViewEventGrid from './MarblesViewEventGrid.svelte';
 
-	interval(0.1 * 2000)
+	interval(2000)
 		.pipe(
-			take(30),
+			take(10),
 			watch('interval-2s', 'all'),
 			filter((v: number) => v % 2 === 0),
 			watch('interval-2s', 'even'),
-			map((v: number) => v * 1000),
-			watch('interval-2s', 'mapped')
+			switchMap((v: number) => {
+				if (v > 5) return of(v * 1000);
+				return throwError(() => 'noo');
+			}),
+			watch('interval-2s', 'mapped'),
+			catchError(() => interval(100).pipe(take(4))),
+			watch('interval-2s', 'mapped'),
 		)
 		.subscribe();
 
-	// interval(1328)
-	// 	.pipe(
-	// 		watch('interval-1.328', 'all'),
-	// 		filter((v: number) => v % 3 === 0),
-	// 		watch('interval-1.328', 'n-th(3)')
-	// 	)
-	// 	.subscribe();
+	interval(1328)
+		.pipe(
+			take(10),
+			watch('interval-1.328', 'all'),
+			filter((v: number) => v % 3 === 0),
+			watch('interval-1.328', 'n-th(3)')
+		)
+		.subscribe();
 
-	// interval(1 * 3328)
-	// 	.pipe(
-	// 		watch('interval-3.328', 'all'),
-	// 		filter((v: number) => v % 3 === 0),
-	// 		watch('interval-3.328', 'n-th(3)')
-	// 	)
-	// 	.subscribe();
+	interval(1 * 3328)
+		.pipe(
+			take(10),
+			watch('interval-3.328', 'all'),
+			filter((v: number) => v % 3 === 0),
+			watch('interval-3.328', 'n-th(3)')
+		)
+		.subscribe();
 
 	export let eventsCollectionStream: Observable<RxCollection<any, any, any, any>>;
 	export let visibleStreamsStream: Observable<StreamRenderingInfo[]>;
@@ -44,6 +51,7 @@
 	const streamGroupHeaderHeight = 30;
 	const eventCellWidth = 40;
 	const eventCellHeight = 40;
+	const gridHorzPadding = 2 * eventCellWidth;
 
 	let eventsStream: Observable<AVStreamEvent[]>;
 	$: eventsStream = $eventsCollectionStream?.find().$;
@@ -60,15 +68,15 @@
 		shareReplay(1)
 	);
 
-	let viewWidthStream: Observable<number>;
-	$: viewWidthStream =
+	let gridWidthStream: Observable<number>;
+	$: gridWidthStream =
 		eventsStream?.pipe(
 			map((events) => events.length * eventCellWidth),
 			distinctUntilChanged(),
 			shareReplay(1)
 		) ?? new BehaviorSubject(0);
 
-	let viewHeightStream: Observable<number> = rowLayoutsStream.pipe(
+	let gridHeightStream: Observable<number> = rowLayoutsStream.pipe(
 		map((rowLayouts) =>
 			Array.from(rowLayouts.values()).reduce(
 				(acc, layout) => (layout.top + layout.height > acc ? layout.top + layout.height : acc),
@@ -117,18 +125,19 @@
 	<div bind:this={scrollContainer} class="scroll-container">
 		<div
 			class="marbles-container"
-			style="width: {$viewWidthStream || 0}px; height: {$viewHeightStream || 0}px;"
+			style="padding-left: {gridHorzPadding}px; width: {($gridWidthStream || 0) +
+				gridHorzPadding * 2}px; height: {($gridHeightStream || 0) + gridHorzPadding * 2}px;"
 		>
 			<div class="marbles-animation-container">
-				{#if $viewWidthStream > 0 && $viewHeightStream > 0 && eventsCount > 0}
+				{#if $gridWidthStream > 0 && $gridHeightStream > 0 && eventsCount > 0}
 					<MarblesViewEventGrid
+						{gridWidthStream}
+						{gridHeightStream}
 						{eventCellWidth}
 						{eventCellHeight}
 						{eventsStream}
 						eventToRowLayout={(event) =>
 							$rowLayoutsStream.get(`${event.streamName}::${event.streamPhase}`)}
-						{viewWidthStream}
-						{viewHeightStream}
 					/>
 				{/if}
 			</div>
