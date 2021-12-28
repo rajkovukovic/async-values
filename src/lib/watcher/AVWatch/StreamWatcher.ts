@@ -1,4 +1,5 @@
-import { BehaviorSubject, map, Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import type { AVStreamEvent } from './AVStreamEvent';
 import { StreamPhaseWatcher } from './StreamPhaseWatcher';
 

@@ -1,8 +1,7 @@
 <script lang="ts">
 	import animateScrollTo from 'animated-scroll-to';
-	import { Observable, BehaviorSubject } from 'rxjs';
+	import { asyncScheduler, Observable, BehaviorSubject } from 'rxjs';
 	import { distinctUntilChanged, map, shareReplay, throttleTime } from 'rxjs/operators';
-	import { asyncScheduler } from 'rxjs';
 	import { afterUpdate } from 'svelte';
 	import { AVWatch } from '$lib/watcher/AVWatch/AVWatch';
 	import type { AVStreamEvent, StreamRenderingInfo } from '$lib/watcher/AVWatch/AVWatch';

@@ -6,8 +6,8 @@
 		[TimeStampView.absoluteDateAndTime]: 'Absolute Date and Time',
 		[TimeStampView.absoluteTime]: 'Absolute Time',
 		[TimeStampView.timeSinceAppStart]: 'Time Since App Start',
-		[TimeStampView.timeSincePreviousEvent]: 'Time Since Previous Event',
-	}
+		[TimeStampView.timeSincePreviousEvent]: 'Time Since Previous Event'
+	};
 </script>
 
 <div>
