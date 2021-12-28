@@ -1,11 +1,11 @@
-import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
+import { BehaviorSubject, combineLatest, from, Observable, Subscription } from 'rxjs';
 import { map, shareReplay, switchMap } from 'rxjs/operators';
 
 import type { AVStreamEvent } from './AVStreamEvent';
 import type { StreamRenderingInfo } from './StreamRenderingInfo';
 import { StreamWatcher } from './StreamWatcher';
-import EventsView from '../EventsView/EventsView.svelte';
 import { sortedEventIndex } from './AVWatch.helpers';
+import type EventsView from '../EventsView/EventsView.svelte';
 
 export * from './AVStreamEvent';
 export * from './StreamRenderingInfo';
@@ -152,19 +152,28 @@ class AVWatchClass {
 	}
 
 	private _eventsView: EventsView = null;
+	private _eventsViewMountingSubsriber: Subscription = null;
 
 	public activate(showWatcherOnMount = false): void {
-		if (this._eventsView) {
+		if (this._eventsViewMountingSubsriber && !this._eventsViewMountingSubsriber.closed) {
 			this.deactivate();
 		}
 
-		this._eventsView = new EventsView({
-			target: document.body,
-			props: { visible: showWatcherOnMount }
-		});
+		this._eventsViewMountingSubsriber = from(import('../EventsView/EventsView.svelte'))
+			.pipe(map((module) => module.default))
+			.subscribe({
+				next: (EventsViewComponent) => {
+					this._eventsView = new EventsViewComponent({
+						target: document.body,
+						props: { visible: showWatcherOnMount }
+					});
+				}
+			});
 	}
 
 	public deactivate(): void {
+		this._eventsViewMountingSubsriber?.unsubscribe();
+		this._eventsViewMountingSubsriber = null;
 		this._eventsView?.$destroy();
 		this._eventsView = null;
 	}

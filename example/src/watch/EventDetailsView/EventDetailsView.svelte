@@ -2,6 +2,7 @@
 	import type { Observable } from 'rxjs';
 	import { AVWatch, StreamRenderingInfo } from '../AVWatch/AVWatch';
 	import type { AVStreamEvent } from '../../watch/AVWatch/AVWatch';
+	import { showAppFullStateStream, showEventDetailsStream } from '../EventsView/preferences';
 	import EventTree from './EventTree.svelte';
 	import { getAppStateAtEvent } from './EventDetailsView.helpers';
 
@@ -9,17 +10,13 @@
 	export let eventsStream: Observable<AVStreamEvent[]>;
 	const visibleStreams: Observable<StreamRenderingInfo[]> = AVWatch.visibleStreams;
 
-	let showAppFullState = true;
-	let expandPreviousEvent = true;
-	let showDetails = false;
-
 	let previousEvent: AVStreamEvent;
 	$: previousEvent =
-		selectedEvent && !showAppFullState ? AVWatch.eventInSamePhase(selectedEvent, -1) : null;
+		selectedEvent && !$showAppFullStateStream ? AVWatch.eventInSamePhase(selectedEvent, -1) : null;
 
 	let appState: Map<string, Map<string, AVStreamEvent>>;
 	$: appState =
-		showAppFullState && $visibleStreams
+		$showAppFullStateStream && $visibleStreams
 			? getAppStateAtEvent($visibleStreams, selectedEvent, $eventsStream)
 			: null;
 </script>
@@ -27,15 +24,18 @@
 <div class="event-view">
 	<div class="event-view-header">
 		<span class="event-view-label">View Mode: </span>
-		<span on:click={() => (showAppFullState = !showAppFullState)}>
-			{#if showAppFullState}
+		<span on:click={() => ($showAppFullStateStream = !$showAppFullStateStream)}>
+			{#if $showAppFullStateStream}
 				App State
 			{:else}
 				Selection
 			{/if}
 		</span>
-		<span class="event-view-label" on:click={() => (showDetails = !showDetails)}>
-			{#if showDetails}
+		<span
+			class="event-view-label"
+			on:click={() => ($showEventDetailsStream = !$showEventDetailsStream)}
+		>
+			{#if $showEventDetailsStream}
 				With Details
 			{:else}
 				No Details
@@ -44,7 +44,7 @@
 	</div>
 
 	<div class="event-view-content">
-		{#if showAppFullState}
+		{#if $showAppFullStateStream}
 			{#if appState}
 				{#each [...appState.entries()] as [streamName, phaseMap]}
 					<div class="stream-info">
@@ -58,7 +58,7 @@
 									- no events
 								{/if}
 								{#if event}
-									<EventTree {event} {showDetails} />
+									<EventTree {event} showDetails={$showEventDetailsStream} />
 								{/if}
 							</div>
 						{/each}
@@ -70,22 +70,17 @@
 			<div><span class="event-view-label">streamPhase: </span>{selectedEvent.streamPhase}</div>
 
 			<div class="event-view-headline">Selected Event:</div>
-			<EventTree event={selectedEvent} />
+			<EventTree event={selectedEvent} showDetails={$showEventDetailsStream} />
 
-			<div
-				class="event-view-headline"
-				on:click={() => (expandPreviousEvent = !expandPreviousEvent)}
-			>
+			<div class="event-view-headline">
 				{#if !previousEvent}
 					No previous event
-				{:else if expandPreviousEvent}
-					Previous event of same phase:
 				{:else}
-					Click to show previous event
+					Previous event of same phase:
 				{/if}
 			</div>
-			{#if expandPreviousEvent && previousEvent}
-				<EventTree event={previousEvent} {showDetails} />
+			{#if previousEvent}
+				<EventTree event={previousEvent} showDetails={$showEventDetailsStream} />
 			{/if}
 		{:else}
 			Select an event to see info
@@ -95,6 +90,10 @@
 
 <style>
 	.event-view {
+		min-height: 0;
+		display: grid;
+		grid-template-rows: auto 1fr;
+		grid-template-columns: 1fr;
 		background: #1b2b34;
 		border-left: 1px solid black;
 		font-family: var(--json-tree-font-family);
@@ -108,6 +107,8 @@
 	}
 
 	.event-view-content {
+		position: relative;
+		overflow: auto;
 		padding: 16px;
 	}
 
@@ -116,7 +117,6 @@
 		padding: 0.5em 0;
 		/* font-weight: bold; */
 		color: #bc80b3;
-		cursor: pointer;
 	}
 
 	.event-view-label {
@@ -128,6 +128,9 @@
 	}
 
 	.stream-name {
+		position: sticky;
+		top: -16px;
+		z-index: 1;
 		margin: -8px -16px;
 		padding: 8px 16px;
 		background: rgb(5, 26, 39);

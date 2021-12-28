@@ -8,12 +8,12 @@
 	import ErrorNode from './ErrorNode.svelte';
 	import objType from './objType';
 	import { TimeStampView } from '../EventsView/TimeStampView';
-	import { timestampViewStore } from '../EventsView/preferences';
+	import { timestampViewStream } from '../EventsView/preferences';
 
 	export let key, value, isParentExpanded, isParentArray;
 	$: nodeType = objType(value);
 	$: componentType = getComponent(nodeType);
-	$: valueGetter = getValueGetter(nodeType, $timestampViewStore);
+	$: valueGetter = getValueGetter(nodeType, $timestampViewStream);
 
 	function getComponent(nodeType) {
 		switch (nodeType) {

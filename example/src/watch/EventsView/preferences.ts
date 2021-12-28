@@ -2,12 +2,49 @@ import { browser } from '$app/env';
 import { BehaviorSubject, skip } from 'rxjs';
 import { TimeStampView } from './TimeStampView';
 
-export const timestampViewStore = new BehaviorSubject<TimeStampView>(
-	(browser ? (localStorage.getItem('async-value:watch:TimeStampView') as any) : null) ??
-		TimeStampView.timeSinceAppStart
-);
-(timestampViewStore as any).set = timestampViewStore.next.bind(timestampViewStore);
+class BehaviorSubjectWithSet<T> extends BehaviorSubject<T> {
+	set(value: T): void {
+		super.next(value);
+	}
+}
 
-timestampViewStore
-	.pipe(skip(1))
-	.subscribe((value) => localStorage.setItem('async-value:watch:TimeStampView', value));
+export const timestampViewStream = createLocalStorageStream(
+	TimeStampView.timeSinceAppStart,
+	'TimeStampView'
+);
+
+export const showAppFullStateStream = createLocalStorageStream(true, 'ShowAppFullState');
+
+export const showEventDetailsStream = createLocalStorageStream(false, 'ShowEventDetails');
+
+/**
+ *
+ * @param initialValue value used as stream seed if localStorage has invalid or no value
+ * @param localStorageKey key used to read/write stream values from/to localStorage
+ * @returns BehaviorSubject seeded with localStorage.getItem(localStorageKey) || initialValue
+ */
+function createLocalStorageStream<T>(
+	initialValue: T,
+	localStorageKey: string
+): BehaviorSubjectWithSet<T> {
+	localStorageKey = `async-value:watch:${localStorageKey}`;
+
+	let existingValue: T = null;
+
+	if (browser) {
+		try {
+			const raw = localStorage.getItem(localStorageKey);
+			if (typeof raw === 'string') existingValue = JSON.parse(raw);
+		} catch (_) {
+			// noop
+		}
+	}
+
+	const stream = new BehaviorSubjectWithSet<T>(existingValue ?? initialValue);
+
+	stream
+		.pipe(skip(1))
+		.subscribe((value) => localStorage.setItem(localStorageKey, JSON.stringify(value)));
+
+	return stream;
+}

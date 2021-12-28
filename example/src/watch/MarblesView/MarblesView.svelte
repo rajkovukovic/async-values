@@ -178,7 +178,7 @@
 		{/if}
 	</div>
 
-	<EventDetailsView {eventsStream} {rowLayoutsStream} {selectedEvent} />
+	<EventDetailsView {eventsStream} {selectedEvent} />
 </div>
 
 <style>
@@ -186,6 +186,7 @@
 		display: grid;
 		grid-template-columns: 1fr 320px;
 		grid-template-rows: 1fr;
+		max-height: 100%;;
 		background: rgb(23, 23, 23);
 		color: white;
 	}
