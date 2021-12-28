@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Observable } from "rxjs";
+	import type { Observable } from 'rxjs';
 
 	export let rowLayoutsStream: Observable<Map<string, any>>;
 </script>
@@ -24,6 +24,7 @@
 		left: 0;
 		right: 0;
 		bottom: 0;
+		filter: grayscale(1);
 	}
 
 	.row {
@@ -39,7 +40,6 @@
 	}
 
 	.header-row {
-		background: #007acc;
 		background: rgb(5, 26, 39);
 		color: white;
 		font-size: 1.25em;

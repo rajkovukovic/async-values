@@ -1,6 +1,7 @@
 <script lang="ts">
+	import { fade, fly, slide } from 'svelte/transition';
 	import type { Observable } from 'rxjs';
-	import { AVWatch, StreamRenderingInfo } from '../AVWatch/AVWatch';
+	import { AVStreamEventType, AVWatch, StreamRenderingInfo } from '../AVWatch/AVWatch';
 	import type { AVStreamEvent } from '../../watch/AVWatch/AVWatch';
 	import { showAppFullStateStream, showEventDetailsStream } from '../EventsView/preferences';
 	import EventTree from './EventTree.svelte';
@@ -24,7 +25,7 @@
 <div class="event-view">
 	<div class="event-view-header">
 		<span class="event-view-label">View Mode: </span>
-		<span on:click={() => ($showAppFullStateStream = !$showAppFullStateStream)}>
+		<span class="clickable" on:click={() => ($showAppFullStateStream = !$showAppFullStateStream)}>
 			{#if $showAppFullStateStream}
 				App State
 			{:else}
@@ -32,7 +33,7 @@
 			{/if}
 		</span>
 		<span
-			class="event-view-label"
+			class="event-view-label clickable"
 			on:click={() => ($showEventDetailsStream = !$showEventDetailsStream)}
 		>
 			{#if $showEventDetailsStream}
@@ -49,16 +50,26 @@
 				{#each [...appState.entries()] as [streamName, phaseMap]}
 					<div class="stream-info">
 						<div class="stream-name">{streamName}</div>
-						{#each [...phaseMap.entries()] as [phaseName, event]}
+						{#each [...phaseMap.entries()] as [phaseName, event], index (phaseName)}
 							<div class="phase-info">
 								<span class="phase-name">
 									{phaseName}
 								</span>
 								{#if !event}
 									- no events
+								{:else if !$showEventDetailsStream}
+									{#if event.type === AVStreamEventType.error || event.type === AVStreamEventType.avError}
+										<span style="color: red;">({event.type})</span>
+									{:else if event.type === AVStreamEventType.complete || event.type === AVStreamEventType.pending}
+										<span>({event.type})</span>
+									{/if}
 								{/if}
 								{#if event}
-									<EventTree {event} showDetails={$showEventDetailsStream} />
+									{#key event?.id}
+										<div transition:slide>
+											<EventTree {event} showDetails={$showEventDetailsStream} />
+										</div>
+									{/key}
 								{/if}
 							</div>
 						{/each}
@@ -103,7 +114,6 @@
 	.event-view-header {
 		padding: 10px 16px 6px;
 		background: rgb(23, 23, 23);
-		cursor: pointer;
 	}
 
 	.event-view-content {

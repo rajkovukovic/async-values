@@ -3,6 +3,7 @@ import type { AVStreamEventType } from './AVStreamEventType';
 export class AVStreamEvent {
 	private static _nextId = 0;
 	public id: number;
+	public ordinal: number;
 
 	constructor(
 		public readonly timestamp: number,

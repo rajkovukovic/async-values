@@ -12,5 +12,5 @@ export function sortedEventIndex(events: AVStreamEvent[], eventId: number): numb
 		else end = mid;
 	}
 
-	return start;
+	return end;
 }

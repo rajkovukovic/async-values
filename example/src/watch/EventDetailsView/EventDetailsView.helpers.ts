@@ -4,6 +4,7 @@ import type { AVStreamEvent, StreamRenderingInfo } from '../AVWatch/AVWatch';
 export function getAppStateAtEvent(
 	streams: StreamRenderingInfo[],
 	event: AVStreamEvent,
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	_: AVStreamEvent[],
 ): Map<string, Map<string, AVStreamEvent>> {
 	const streamMap = new Map<string, Map<string, AVStreamEvent>>();

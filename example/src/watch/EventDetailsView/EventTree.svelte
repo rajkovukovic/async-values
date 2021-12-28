@@ -12,6 +12,7 @@
 		value={showDetails
 			? {
 					id: event.id,
+					ordinal: event.ordinal,
 					timestamp: new Date(event.timestamp),
 					type: event.type,
 					data: event.data

@@ -109,10 +109,12 @@ class AVWatchClass {
 
 	/**
 	 *
+	 * searches for event of eventId in phase[streamPhase] of stream[streamName]
 	 * @param streamName name of the stream to search
 	 * @param streamPhase phase of the stream to search
 	 * @param eventId eventId to search for
-	 * @returns event with eventId or latest event older than event[id=eventId]
+	 * @returns event of eventId if found or the newest event that happened before event[eventId]
+	 * @returns null if none exists
 	 */
 	public eventByIdOrOlder(
 		streamName: string,
@@ -123,15 +125,28 @@ class AVWatchClass {
 			?.get(streamName)
 			?.currentPhases.get(streamPhase)?.currentEvents;
 
-		const index = sortedEventIndex(phaseEvents, eventId);
+		let index = sortedEventIndex(phaseEvents, eventId);
 
-		return phaseEvents[index]?.id === eventId ? phaseEvents[index] : phaseEvents[index - 1] ?? null;
+		if (phaseEvents[index]?.id === eventId) return phaseEvents[index];
+
+		let candidate = phaseEvents[index];
+
+		while (candidate && candidate.id > eventId && index > 0) {
+			index--;
+			candidate = phaseEvents[index];
+			if (candidate && candidate.id < eventId) {
+				break;
+			}
+		}
+		return candidate;
 	}
 
 	/**
+	 * searches for the event in the same phase as [event]
 	 * @param event - starting event
 	 * @param offset - i.e. if offset=-1, find previous event of same phase
 	 * @returns AVStreamEvent if found, null otherwise
+	 * @returns null if [event] is null
 	 */
 	public eventInSamePhase(event: AVStreamEvent | null, offset: number): AVStreamEvent | null {
 		if (!event) return null;
@@ -140,15 +155,10 @@ class AVWatchClass {
 			?.get(event.streamName)
 			?.currentPhases.get(event.streamPhase)?.currentEvents;
 
-		const index = sortedEventIndex(phaseEvents, event.id);
+		if (!phaseEvents)
+			throw new Error(`Can not find phase "${event.streamPhase}" in stream "${event.streamName}"`);
 
-		if (phaseEvents[index].id !== event.id) {
-			throw new Error(
-				`Can not find event id[${event.id}] in stream[${event.streamName}], phase[${event.streamPhase}]`
-			);
-		}
-
-		return phaseEvents[index + offset] ?? null;
+		return phaseEvents[event.ordinal + offset] ?? null;
 	}
 
 	private _eventsView: EventsView = null;

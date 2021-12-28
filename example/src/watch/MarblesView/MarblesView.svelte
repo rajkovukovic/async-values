@@ -12,7 +12,7 @@
 	import EventDetailsView from '../EventDetailsView/EventDetailsView.svelte';
 
 	const eventsStream: Observable<AVStreamEvent[]> = AVWatch.events.pipe(
-		throttleTime(300, asyncScheduler, { leading: true, trailing: true }),
+		throttleTime(850, asyncScheduler, { leading: true, trailing: true }),
 		shareReplay(1)
 	);
 
@@ -25,11 +25,15 @@
 		}
 	};
 
+	export const selectFirstEvent = () => selectEvent(0);
+
+	export const selectLastEvent = () => selectEvent($eventsStream.length - 1);
+
 	export const selectPrevEvent = (ofSamePhase = false) =>
 		selectEvent(
 			selectedEvent && !ofSamePhase
 				? selectedEvent.id - 1
-				: AVWatch.eventInSamePhase(selectedEvent?.id, -1)?.id ??
+				: AVWatch.eventInSamePhase(selectedEvent, -1)?.id ??
 						selectedEvent?.id ??
 						$eventsStream.length - 1
 		);
@@ -38,7 +42,7 @@
 		selectEvent(
 			selectedEvent && !ofSamePhase
 				? selectedEvent.id + 1
-				: AVWatch.eventInSamePhase(selectedEvent?.id, 1)?.id ?? selectedEvent?.id ?? 0
+				: AVWatch.eventInSamePhase(selectedEvent, 1)?.id ?? selectedEvent?.id ?? 0
 		);
 
 	export const scrollToEvent = (indexOrEventId: number) => {
@@ -92,7 +96,7 @@
 	let autoScrollToLatest = true;
 	$: animatedScrollProps = {
 		elementToScroll: scrollContainer,
-		maxDuration: 250,
+		maxDuration: 150,
 		speed: 500
 	};
 
@@ -139,15 +143,6 @@
 	// 	distinctUntilChanged(),
 	// 	shareReplay(1)
 	// );
-
-	// $: console.log('$clientWidthStream', $clientWidthStream);
-	// $: console.log('$eventsStream', $eventsStream.length);
-	// $: console.log('$viewWidth', $gridWidthStream);
-	// $: console.log('$viewHeight', $viewHeight);
-	// $: console.log('$scrollPositionStream', $scrollPositionStream);
-	// $: console.log('$firstVisibleEventIndex', $firstVisibleEventIndex);
-	// $: console.log('$lastVisibleEventIndex', $lastVisibleEventIndex);
-	// $: console.log('autoScrollToLatest', autoScrollToLatest);
 </script>
 
 <div class="marbles-view">
@@ -181,13 +176,13 @@
 	<EventDetailsView {eventsStream} {selectedEvent} />
 </div>
 
-<style>
+<style lang="scss">
 	.marbles-view {
 		display: grid;
 		grid-template-columns: 1fr 320px;
 		grid-template-rows: 1fr;
-		max-height: 100%;;
-		background: rgb(23, 23, 23);
+		max-height: 100%;
+		background: rgb(12, 12, 12);
 		color: white;
 	}
 
@@ -204,5 +199,16 @@
 		min-height: 100%;
 		overflow: auto hidden;
 		z-index: 1;
+	}
+
+	:global(.clickable) {
+		background: inherit;
+		&:hover {
+			cursor: pointer;
+			filter: brightness(200%);
+		}
+		&:active {
+			filter: blur(1px);
+		}
 	}
 </style>

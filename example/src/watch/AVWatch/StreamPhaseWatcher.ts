@@ -20,6 +20,7 @@ export class StreamPhaseWatcher {
 	}
 
 	public addEvent(event: AVStreamEvent): void {
+		event.ordinal = this._events.value.length;
 		this._events.value.push(event);
 		this._events.next(this._events.value);
 	}

@@ -3,11 +3,8 @@
 	import { fade } from 'svelte/transition';
 	import { createEventDispatcher } from 'svelte';
 	import type { StreamRowLayout } from './MarblesView.helpers';
-	import { AVStreamEvent, AVStreamEventType } from '../AVWatch/AVWatch';
-	import ValueMarble from './marbles/ValueMarble.svelte';
-	import AVValueMarble from './marbles/AVValueMarble.svelte';
-	import ErrorMarble from './marbles/ErrorMarble.svelte';
-	import CompleteMarble from './marbles/CompleteMarble.svelte';
+	import type { AVStreamEvent } from '../AVWatch/AVWatch';
+	import GenericMarble from './marbles/GenericMarble.svelte';
 
 	export let eventsStream: Observable<AVStreamEvent[]>;
 	export let gridWidthStream: Observable<number>;
@@ -39,17 +36,7 @@
 				width={eventCellWidth}
 				height={eventCellWidth}
 			/>
-			{#if event.type === AVStreamEventType.value}
-				<AVValueMarble
-					size={eventCellWidth / 2}
-					error={Math.random() > 0.66}
-					pending={Math.random() < 0.34}
-				/>
-			{:else if event.type === AVStreamEventType.error}
-				<ErrorMarble size={eventCellWidth / 2} />
-			{:else}
-				<CompleteMarble size={eventCellWidth / 2} />
-			{/if}
+			<GenericMarble {event} size={eventCellWidth / 2} />
 		</g>
 	{/each}
 </svg>

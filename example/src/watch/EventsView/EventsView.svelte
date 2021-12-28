@@ -12,9 +12,9 @@
 	onMount(() => setKeyboardShorcuts(true));
 	onDestroy(() => setKeyboardShorcuts(false));
 
-	interval(2000 / 10)
+	interval(2021 / 10)
 		.pipe(
-			take(20),
+			take(10),
 			watch('medium', 'all'),
 			filter((v: number) => v % 2 === 0),
 			watch('medium', 'even'),
@@ -25,7 +25,7 @@
 
 	interval(1021 / 10)
 		.pipe(
-			take(20),
+			take(10),
 			watch('fast', 'all'),
 			filter((v: number) => v % 3 === 0),
 			watch('fast', 'n-th(3)')
@@ -34,7 +34,7 @@
 
 	interval(3328 / 10)
 		.pipe(
-			take(20),
+			take(10),
 			watch('slow', 'all'),
 			filter((v: number) => v % 3 === 0),
 			watch('slow', 'n-th(3)')
@@ -49,10 +49,18 @@
 		} else if (visible) {
 			switch (event.key) {
 				case 'ArrowLeft':
-					marblesView?.selectPrevEvent(event.altKey);
+					marblesView?.selectPrevEvent(!event.altKey);
 					break;
 				case 'ArrowRight':
-					marblesView?.selectNextEvent(event.altKey);
+					marblesView?.selectNextEvent(!event.altKey);
+					break;
+				case 'f':
+				case 'F':
+					marblesView?.selectFirstEvent();
+					break;
+				case 'l':
+				case 'L':
+					marblesView?.selectLastEvent();
 					break;
 				default:
 					isShortcut = false;

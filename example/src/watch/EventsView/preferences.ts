@@ -9,7 +9,7 @@ class BehaviorSubjectWithSet<T> extends BehaviorSubject<T> {
 }
 
 export const timestampViewStream = createLocalStorageStream(
-	TimeStampView.timeSinceAppStart,
+	TimeStampView.absoluteTime,
 	'TimeStampView'
 );
 
