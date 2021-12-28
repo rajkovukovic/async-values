@@ -131,7 +131,7 @@ class AVWatchClass {
 
 		let candidate = phaseEvents[index];
 
-		while (candidate && candidate.id > eventId && index > 0) {
+		while (candidate && candidate.id > eventId && index >= 0) {
 			index--;
 			candidate = phaseEvents[index];
 			if (candidate && candidate.id < eventId) {
