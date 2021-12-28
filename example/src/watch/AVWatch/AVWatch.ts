@@ -1,11 +1,11 @@
-import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
-import type { MonoTypeOperatorFunction } from 'rxjs';
-import { tap, map, shareReplay, switchMap } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
+import { map, shareReplay, switchMap } from 'rxjs/operators';
 
-import { AVStreamEvent } from './AVStreamEvent';
+import type { AVStreamEvent } from './AVStreamEvent';
 import type { StreamRenderingInfo } from './StreamRenderingInfo';
-import { AVStreamEventType } from './AVStreamEventType';
 import { StreamWatcher } from './StreamWatcher';
+import EventsView from '../EventsView/EventsView.svelte';
+import { sortedEventIndex } from './AVWatch.helpers';
 
 export * from './AVStreamEvent';
 export * from './StreamRenderingInfo';
@@ -18,12 +18,15 @@ class AVWatchClass {
 	 */
 	private _initTimestamp: number | null = null;
 
+	/**
+	 * all events from all the streams and all the phases
+	 */
 	private _events = new BehaviorSubject<AVStreamEvent[]>([]);
 	private _eventCount = this._events.pipe(map((events) => events.length));
 
-	public get eventCount(): Observable<number> {
-		return this._eventCount;
-	}
+	/**
+	 * all the streams being watched
+	 */
 	private _streams = new BehaviorSubject(new Map<string, StreamWatcher>());
 	private _streamCount = this._streams.pipe(map((streams) => streams.size));
 
@@ -49,6 +52,10 @@ class AVWatchClass {
 
 	public get events(): Observable<AVStreamEvent[]> {
 		return this._events.asObservable();
+	}
+
+	public get eventCount(): Observable<number> {
+		return this._eventCount;
 	}
 
 	public addEvent(event: AVStreamEvent) {
@@ -92,71 +99,77 @@ class AVWatchClass {
 		return this._visibleStreams;
 	}
 
+	public latestEventByPhase(streamName: string, streamPhase: string): AVStreamEvent | null {
+		const phaseEvents = this._streams.value
+			?.get(streamName)
+			?.currentPhases.get(streamPhase)?.currentEvents;
+
+		return phaseEvents[phaseEvents.length - 1] ?? null;
+	}
+
 	/**
-	 * @param eventId - id of current event
+	 *
+	 * @param streamName name of the stream to search
+	 * @param streamPhase phase of the stream to search
+	 * @param eventId eventId to search for
+	 * @returns event with eventId or latest event older than event[id=eventId]
+	 */
+	public eventByIdOrOlder(
+		streamName: string,
+		streamPhase: string,
+		eventId: number
+	): AVStreamEvent | null {
+		const phaseEvents = this._streams.value
+			?.get(streamName)
+			?.currentPhases.get(streamPhase)?.currentEvents;
+
+		const index = sortedEventIndex(phaseEvents, eventId);
+
+		return phaseEvents[index]?.id === eventId ? phaseEvents[index] : phaseEvents[index - 1] ?? null;
+	}
+
+	/**
+	 * @param event - starting event
 	 * @param offset - i.e. if offset=-1, find previous event of same phase
 	 * @returns AVStreamEvent if found, null otherwise
 	 */
-	public eventInSamePhase(eventId: number, offset: number) {
-		if (Number.isFinite(eventId)) {
-			const events = this._events.value;
-			const currentEvent = events[eventId];
+	public eventInSamePhase(event: AVStreamEvent | null, offset: number): AVStreamEvent | null {
+		if (!event) return null;
 
-			if (offset > 0) {
-				for (let index = eventId + 1; index < events.length; index++) {
-					if (
-						events[index].streamName === currentEvent.streamName &&
-						events[index].streamPhase === currentEvent.streamPhase
-					) {
-						offset--;
-						if (offset <= 0) return events[index];
-					}
-				}
-			} else {
-				for (let index = eventId - 1; index >= 0; index--) {
-					if (
-						events[index].streamName === currentEvent.streamName &&
-						events[index].streamPhase === currentEvent.streamPhase
-					) {
-						offset++;
-						if (offset >= 0) return events[index];
-					}
-				}
-			}
+		const phaseEvents = this._streams.value
+			?.get(event.streamName)
+			?.currentPhases.get(event.streamPhase)?.currentEvents;
+
+		const index = sortedEventIndex(phaseEvents, event.id);
+
+		if (phaseEvents[index].id !== event.id) {
+			throw new Error(
+				`Can not find event id[${event.id}] in stream[${event.streamName}], phase[${event.streamPhase}]`
+			);
 		}
 
-		return null;
+		return phaseEvents[index + offset] ?? null;
+	}
+
+	private _eventsView: EventsView = null;
+
+	public activate(showWatcherOnMount = false): void {
+		if (this._eventsView) {
+			this.deactivate();
+		}
+
+		this._eventsView = new EventsView({
+			target: document.body,
+			props: { visible: showWatcherOnMount }
+		});
+	}
+
+	public deactivate(): void {
+		this._eventsView?.$destroy();
+		this._eventsView = null;
 	}
 }
 
 export const AVWatch = new AVWatchClass();
 
-export function watch<T>(streamName: string, streamPhase: string): MonoTypeOperatorFunction<T> {
-	AVWatch.addWatch(streamName, streamPhase);
-
-	return tap({
-		next: (value) => {
-			AVWatch.addEvent(
-				new AVStreamEvent(Date.now(), streamName, streamPhase, AVStreamEventType.value, value)
-			);
-		},
-
-		error: (error) => {
-			AVWatch.addEvent(
-				new AVStreamEvent(Date.now(), streamName, streamPhase, AVStreamEventType.error, error)
-			);
-		},
-
-		complete: () => {
-			AVWatch.addEvent(
-				new AVStreamEvent(
-					Date.now(),
-					streamName,
-					streamPhase,
-					AVStreamEventType.complete,
-					undefined
-				)
-			);
-		}
-	});
-}
+export * from './watch';

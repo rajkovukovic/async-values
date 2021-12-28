@@ -1,5 +1,9 @@
 <script lang="ts">
-  import EventsView from '../watch/EventsView/EventsView.svelte';
-</script>
+	import { onDestroy, onMount } from 'svelte';
 
-<EventsView />
+	import { AVWatch } from '../watch/AVWatch/AVWatch';
+
+	onMount(() => AVWatch.activate(true));
+
+	onDestroy(() => AVWatch.deactivate());
+</script>

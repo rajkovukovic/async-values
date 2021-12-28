@@ -4,7 +4,7 @@ import { TimeStampView } from './TimeStampView';
 
 export const timestampViewStore = new BehaviorSubject<TimeStampView>(
 	(browser ? (localStorage.getItem('async-value:watch:TimeStampView') as any) : null) ??
-		TimeStampView.timeSincePreviousEvent
+		TimeStampView.timeSinceAppStart
 );
 (timestampViewStore as any).set = timestampViewStore.next.bind(timestampViewStore);
 

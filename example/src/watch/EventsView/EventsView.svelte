@@ -1,46 +1,103 @@
 <script lang="ts">
-	import { onDestroy } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
+	import { interval, BehaviorSubject } from 'rxjs';
+	import { filter, map, take } from 'rxjs/operators';
 	import { browser } from '$app/env';
 
+	import { watch } from '../../watch/AVWatch/AVWatch';
 	import MarblesView from '../MarblesView/MarblesView.svelte';
-	import Preferences from './Preferences.svelte';
 
-	export let enabled = true;
+	export let visible = false;
 
+	onMount(() => setKeyboardShorcuts(true));
 	onDestroy(() => setKeyboardShorcuts(false));
 
-	let keyboardShortcutsActive = false;
+	interval(2000 / 10)
+		.pipe(
+			take(20),
+			watch('medium', 'all'),
+			filter((v: number) => v % 2 === 0),
+			watch('medium', 'even'),
+			map((v: number) => new BehaviorSubject(v * 1000)),
+			watch('medium', 'mapped')
+		)
+		.subscribe();
 
-	$: if (browser && Boolean(enabled) !== keyboardShortcutsActive) {
-		setKeyboardShorcuts(Boolean(enabled));
-	}
+	interval(1021 / 10)
+		.pipe(
+			take(20),
+			watch('fast', 'all'),
+			filter((v: number) => v % 3 === 0),
+			watch('fast', 'n-th(3)')
+		)
+		.subscribe();
+
+	interval(3328 / 10)
+		.pipe(
+			take(20),
+			watch('slow', 'all'),
+			filter((v: number) => v % 3 === 0),
+			watch('slow', 'n-th(3)')
+		)
+		.subscribe();
 
 	function handleKeyDown(event: KeyboardEvent) {
-		switch (event.key) {
-			case 'ArrowLeft':
-				return marblesView?.selectPrevEvent(event.altKey);
-			case 'ArrowRight':
-				return marblesView?.selectNextEvent(event.altKey);
-			default:
-			// noop
+		let isShortcut = true;
+
+		if ((event.key === 'Alt' && event.ctrlKey) || (event.key === 'Control' && event.altKey)) {
+			visible = !visible;
+		} else if (visible) {
+			switch (event.key) {
+				case 'ArrowLeft':
+					marblesView?.selectPrevEvent(event.altKey);
+					break;
+				case 'ArrowRight':
+					marblesView?.selectNextEvent(event.altKey);
+					break;
+				default:
+					isShortcut = false;
+			}
+		} else {
+			isShortcut = false;
+		}
+
+		if (isShortcut) {
+			event.stopPropagation();
+			event.preventDefault();
 		}
 	}
 
 	function setKeyboardShorcuts(state: boolean) {
-		if (state !== keyboardShortcutsActive) {
-			if (keyboardShortcutsActive) {
-				window.removeEventListener('keydown', handleKeyDown, true);
-				console.log('AsyncValues Watcher: keyboard shortcuts deactivated');
-			} else {
+		if (browser) {
+			if (state) {
 				window.addEventListener('keydown', handleKeyDown, true);
 				console.log('AsyncValues Watcher: keyboard shortcuts activated');
+			} else {
+				window.removeEventListener('keydown', handleKeyDown, true);
+				console.log('AsyncValues Watcher: keyboard shortcuts deactivated');
 			}
-			keyboardShortcutsActive = !keyboardShortcutsActive;
 		}
 	}
 
 	let marblesView: MarblesView;
 </script>
 
-<Preferences />
-<MarblesView bind:this={marblesView} />
+<div class="events-view" class:visible>
+	<!-- <Preferences /> -->
+	<MarblesView bind:this={marblesView} />
+</div>
+
+<style>
+	.events-view {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 1000000000;
+	}
+
+	.events-view:not(.visible) {
+		display: none;
+	}
+</style>

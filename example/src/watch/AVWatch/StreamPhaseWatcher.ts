@@ -7,6 +7,10 @@ export class StreamPhaseWatcher {
 
 	constructor(public phaseName: string) {}
 
+	public get currentEvents(): AVStreamEvent[] {
+		return this._events.value;
+	}
+
 	public get events(): Observable<AVStreamEvent[]> {
 		return this._events.asObservable();
 	}
