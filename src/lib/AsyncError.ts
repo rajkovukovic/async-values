@@ -1,4 +1,6 @@
-export type ConvertibleToAsyncError = string | Error | AsyncError;
+type ConvertibleToAsyncError = string | Error | AsyncError;
+
+export type { ConvertibleToAsyncError };
 
 export class AsyncError extends Error {
 	constructor(message: string) {
@@ -10,13 +12,13 @@ export class AsyncError extends Error {
 		return this.message;
 	}
 
-	static from(error: ConvertibleToAsyncError) {
+	static from(error: ConvertibleToAsyncError): AsyncError {
 		if (error instanceof AsyncError) return error;
 
 		if (error instanceof Error) {
 			const asyncError = new AsyncError(error.message);
 			asyncError.stack = error.stack;
-			(asyncError as any).originalError = error;
+			// (asyncError as any).originalError = error;
 			return asyncError;
 		}
 

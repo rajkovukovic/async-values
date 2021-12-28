@@ -1,5 +1,5 @@
-import { AVWatch } from '$lib/watcher/AVWatch/AVWatch';
-import type { AVStreamEvent, StreamRenderingInfo } from '$lib/watcher/AVWatch/AVWatch';
+import { AVWatch } from '$lib';
+import type { AVStreamEvent, StreamRenderingInfo } from '$lib';
 
 export function getAppStateAtEvent(
 	streams: StreamRenderingInfo[],

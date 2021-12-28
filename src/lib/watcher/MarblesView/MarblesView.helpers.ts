@@ -1,4 +1,4 @@
-import type { StreamRenderingInfo } from '$lib/watcher/AVWatch/StreamRenderingInfo';
+import type { StreamRenderingInfo } from '$lib';
 
 export interface StreamRowLayout {
 	header: boolean;

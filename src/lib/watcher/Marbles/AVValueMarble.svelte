@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { AVStreamEvent, AVStreamEventType } from '../../AVWatch/AVWatch';
-	import MarbleInfo from './MarbleInfo.svelte';
+	import { AVStreamEvent, AVStreamEventType, MarbleInfo } from '$lib';
 
 	export let size: number = 10;
 	export let event: AVStreamEvent;

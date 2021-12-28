@@ -1,6 +1,6 @@
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import type { AVStreamEvent } from './AVStreamEvent';
+import type { AVStreamEvent } from '$lib';
 
 export class StreamPhaseWatcher {
 	private _events = new BehaviorSubject<AVStreamEvent[]>([]);

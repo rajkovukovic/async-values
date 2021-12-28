@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { TimeStampView } from './TimeStampView';
-	import { timestampViewStream } from './preferences';
+	import { TimeStampView, timestampViewStream } from '$lib';
 
 	const timestampMap = {
 		[TimeStampView.absoluteDateAndTime]: 'Absolute Date and Time',

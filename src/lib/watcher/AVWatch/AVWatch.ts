@@ -1,16 +1,7 @@
 import { BehaviorSubject, combineLatest, from, Observable, Subscription } from 'rxjs';
 import { map, shareReplay, switchMap } from 'rxjs/operators';
-
-import type { AVStreamEvent } from './AVStreamEvent';
-import type { StreamRenderingInfo } from './StreamRenderingInfo';
-import { StreamWatcher } from './StreamWatcher';
-import { sortedEventIndex } from './AVWatch.helpers';
-import type EventsView from '$lib/watcher/EventsView/EventsView.svelte';
-
-export * from './AVStreamEvent';
-export * from './StreamRenderingInfo';
-export * from './AVStreamEventType';
-export * from './StreamWatcher';
+import type { AVStreamEvent, StreamRenderingInfo } from '$lib';
+import { StreamWatcher, sortedEventIndex, EventsView } from '$lib';
 
 class AVWatchClass {
 	/**
@@ -162,16 +153,17 @@ class AVWatchClass {
 	}
 
 	private _eventsView: EventsView = null;
-	private _eventsViewMountingSubsriber: Subscription = null;
+	private _eventsViewMountingSubscriber: Subscription = null;
 
 	public activate(showWatcherOnMount = false): void {
-		if (this._eventsViewMountingSubsriber && !this._eventsViewMountingSubsriber.closed) {
+		if (this._eventsViewMountingSubscriber && !this._eventsViewMountingSubscriber.closed) {
 			this.deactivate();
 		}
 
-		this._eventsViewMountingSubsriber = from(import('../EventsView/EventsView.svelte'))
-			.pipe(map((module) => module.default))
-			.subscribe({
+		this._eventsViewMountingSubscriber =
+			// from(import('../EventsView/EventsView.svelte'))
+			// .pipe(map((module) => module.default))
+			from(Promise.resolve(EventsView)).subscribe({
 				next: (EventsViewComponent) => {
 					this._eventsView = new EventsViewComponent({
 						target: document.body,
@@ -182,8 +174,8 @@ class AVWatchClass {
 	}
 
 	public deactivate(): void {
-		this._eventsViewMountingSubsriber?.unsubscribe();
-		this._eventsViewMountingSubsriber = null;
+		this._eventsViewMountingSubscriber?.unsubscribe();
+		this._eventsViewMountingSubscriber = null;
 		this._eventsView?.$destroy();
 		this._eventsView = null;
 	}

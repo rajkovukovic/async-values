@@ -3,12 +3,14 @@
 	import { asyncScheduler, Observable, BehaviorSubject } from 'rxjs';
 	import { distinctUntilChanged, map, shareReplay, throttleTime } from 'rxjs/operators';
 	import { afterUpdate } from 'svelte';
-	import { AVWatch } from '$lib/watcher/AVWatch/AVWatch';
-	import type { AVStreamEvent, StreamRenderingInfo } from '$lib/watcher/AVWatch/AVWatch';
-	import EventDetailsView from '$lib/watcher/EventDetailsView/EventDetailsView.svelte';
-	import { calcRowsLayout } from './MarblesView.helpers';
-	import MarblesViewRowHeaders from './MarblesViewRowHeaders.svelte';
-	import MarblesViewEventGrid from './MarblesViewEventGrid.svelte';
+	import type { AVStreamEvent, StreamRenderingInfo } from '$lib';
+	import {
+		AVWatch,
+		EventDetailsView,
+		calcRowsLayout,
+		MarblesViewRowHeaders,
+		MarblesViewEventGrid
+	} from '$lib';
 
 	const eventsStream: Observable<AVStreamEvent[]> = AVWatch.events.pipe(
 		throttleTime(850, asyncScheduler, { leading: true, trailing: true }),

@@ -1,9 +1,6 @@
 import type { MonoTypeOperatorFunction } from 'rxjs';
 import { tap } from 'rxjs/operators';
-
-import { AVStreamEvent } from './AVStreamEvent';
-import { AVStreamEventType } from './AVStreamEventType';
-import { AVWatch } from './AVWatch';
+import { AVStreamEvent, AVStreamEventType, AVWatch } from '$lib';
 
 export function watch<T>(streamName: string, streamPhase: string): MonoTypeOperatorFunction<T> {
 	AVWatch.addWatch(streamName, streamPhase);

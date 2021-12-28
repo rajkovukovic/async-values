@@ -1,4 +1,4 @@
-import type { AVStreamEvent } from './AVStreamEvent';
+import type { AVStreamEvent } from '$lib';
 
 export function sortedEventIndex(events: AVStreamEvent[], eventId: number): number {
 	if (!events || events.length === 0) return 0;

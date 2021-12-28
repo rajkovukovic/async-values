@@ -1,7 +1,6 @@
 <script lang="ts">
-	import type { AVStreamEvent } from '$lib/watcher/AVWatch/AVWatch';
-	import { AVStreamEventType } from '$lib/watcher/AVWatch/AVWatch';
-	import JSONTree from '$lib/watcher/json-tree/Root.svelte';
+	import type { AVStreamEvent } from '$lib';
+	import { AVStreamEventType, JSONTree } from '$lib';
 
 	export let event: AVStreamEvent;
 	export let showDetails = false;

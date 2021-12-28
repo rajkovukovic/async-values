@@ -1,5 +1,5 @@
-import { AsyncError, ConvertibleToAsyncError } from './AsyncError';
-import { isEmptyValue, isNotEmptyValue } from './helpers';
+import type { ConvertibleToAsyncError } from '$lib';
+import { AsyncError, isEmptyValue, isNotEmptyValue } from '$lib';
 
 /**
  * MultiStateAsyncValue can have more than one
@@ -13,7 +13,7 @@ export class MultiStateAsyncValue<T> {
 
 	static errorHanlder?: (error: Error) => void = MultiStateAsyncValue._consoleErrorLogger;
 
-	static logErrorsToConsole(shouldLog = true) {
+	static logErrorsToConsole(shouldLog = true): void {
 		MultiStateAsyncValue.errorHanlder = shouldLog ? MultiStateAsyncValue._consoleErrorLogger : null;
 	}
 
@@ -28,7 +28,7 @@ export class MultiStateAsyncValue<T> {
 	protected _pending: boolean;
 	protected _value: T;
 
-	constructor(value: T = null, pending: boolean = false, error: ConvertibleToAsyncError = null) {
+	constructor(value: T = null, pending = false, error: ConvertibleToAsyncError = null) {
 		this._value = value ?? null;
 		this._pending = Boolean(pending);
 		this._error = isEmptyValue(error) ? null : AsyncError.from(error);
@@ -104,7 +104,7 @@ export class MultiStateAsyncValue<T> {
 		return clone;
 	}
 
-	cloneAndSetPending(nextPending: boolean = true): MultiStateAsyncValue<T> {
+	cloneAndSetPending(nextPending = true): MultiStateAsyncValue<T> {
 		const clone = this.clone();
 		clone.pending = Boolean(nextPending);
 		return clone;

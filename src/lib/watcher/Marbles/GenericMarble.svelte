@@ -1,9 +1,6 @@
 <script context="module" lang="ts">
-	import { AVStreamEventType } from '../../AVWatch/AVWatch';
-	import AVValueMarble from './AVValueMarble.svelte';
-	import CompleteMarble from './CompleteMarble.svelte';
-	import ErrorMarble from './ErrorMarble.svelte';
-	import ValueMarble from './ValueMarble.svelte';
+	import type { AVStreamEvent } from '$lib';
+	import { AVStreamEventType, AVValueMarble, CompleteMarble, ErrorMarble, ValueMarble } from '$lib';
 
 	const asyncValueTypes = new Map([
 		[AVStreamEventType.avError, AVValueMarble],
@@ -16,8 +13,6 @@
 </script>
 
 <script lang="ts">
-	import type { AVStreamEvent } from '../../AVWatch/AVWatch';
-
 	export let size: number = 10;
 	export let event: AVStreamEvent;
 </script>

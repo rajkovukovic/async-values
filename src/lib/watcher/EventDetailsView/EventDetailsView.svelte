@@ -1,14 +1,16 @@
 <script lang="ts">
 	import { slide } from 'svelte/transition';
 	import type { Observable } from 'rxjs';
-	import { AVStreamEventType, AVWatch, StreamRenderingInfo } from '$lib/watcher/AVWatch/AVWatch';
-	import type { AVStreamEvent } from '$lib/watcher/AVWatch/AVWatch';
+	import type { AVStreamEvent } from '$lib';
 	import {
+		AVStreamEventType,
+		AVWatch,
+		EventTree,
+		getAppStateAtEvent,
 		showAppFullStateStream,
-		showEventDetailsStream
-	} from '$lib/watcher/EventsView/preferences';
-	import EventTree from './EventTree.svelte';
-	import { getAppStateAtEvent } from './EventDetailsView.helpers';
+		showEventDetailsStream,
+		StreamRenderingInfo
+	} from '$lib';
 
 	export let selectedEvent: AVStreamEvent;
 	export let eventsStream: Observable<AVStreamEvent[]>;

@@ -1,12 +1,11 @@
-import { AsyncError, ConvertibleToAsyncError } from './AsyncError';
-import { isNotEmptyValue } from './helpers';
-import { MultiStateAsyncValue } from './MultiStateAsyncValue';
+import type { AsyncError, ConvertibleToAsyncError } from '$lib';
+import { isNotEmptyValue, MultiStateAsyncValue } from '$lib';
 
 /**
  * AsyncValue can have only one of [value, pending, error] set at any time
  */
 export class AsyncValue<T> extends MultiStateAsyncValue<T> {
-	constructor(value: T, pending: boolean = false, error: ConvertibleToAsyncError = null) {
+	constructor(value: T, pending = false, error: ConvertibleToAsyncError = null) {
 		super(value, pending, error);
 		if (
 			Number(isNotEmptyValue(this.value)) +

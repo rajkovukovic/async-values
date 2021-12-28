@@ -1,4 +1,4 @@
-import type { AVStreamEventType } from './AVStreamEventType';
+import type { AVStreamEventType } from '$lib';
 
 export class AVStreamEvent {
 	private static _nextId = 0;

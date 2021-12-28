@@ -2,9 +2,8 @@
 	import type { Observable } from 'rxjs';
 	import { fade } from 'svelte/transition';
 	import { createEventDispatcher } from 'svelte';
-	import type { AVStreamEvent } from '$lib/watcher/AVWatch/AVWatch';
-	import type { StreamRowLayout } from './MarblesView.helpers';
-	import GenericMarble from './marbles/GenericMarble.svelte';
+	import type { AVStreamEvent, StreamRowLayout } from '$lib';
+	import { GenericMarble } from '$lib';
 
 	export let eventsStream: Observable<AVStreamEvent[]>;
 	export let gridWidthStream: Observable<number>;

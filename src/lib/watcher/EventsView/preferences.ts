@@ -1,7 +1,7 @@
-import { browser } from '$app/env';
 import { BehaviorSubject } from 'rxjs';
 import { skip } from 'rxjs/operators';
-import { TimeStampView } from './TimeStampView';
+import { browser } from '$app/env';
+import { TimeStampView } from '$lib';
 
 class BehaviorSubjectWithSet<T> extends BehaviorSubject<T> {
 	set(value: T): void {

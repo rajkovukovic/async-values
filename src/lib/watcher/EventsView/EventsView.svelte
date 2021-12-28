@@ -4,8 +4,7 @@
 	import { filter, map, take } from 'rxjs/operators';
 	import { browser } from '$app/env';
 
-	import { watch } from '$lib/watcher/AVWatch/AVWatch';
-	import MarblesView from '$lib/watcher/MarblesView/MarblesView.svelte';
+	import { MarblesView, watch } from '$lib';
 
 	export let visible = false;
 

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 
-	import { AVWatch } from '$lib/watcher/AVWatch/AVWatch';
+	import { AVWatch } from '$lib';
 
 	onMount(() => AVWatch.activate(true));
 
