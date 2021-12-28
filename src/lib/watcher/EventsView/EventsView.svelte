@@ -11,34 +11,34 @@
 	onMount(() => setKeyboardShorcuts(true));
 	onDestroy(() => setKeyboardShorcuts(false));
 
-	interval(2021 / 10)
-		.pipe(
-			take(10),
-			watch('medium', 'all'),
-			filter((v: number) => v % 2 === 0),
-			watch('medium', 'even'),
-			map((v: number) => new BehaviorSubject(v * 1000)),
-			watch('medium', 'mapped')
-		)
-		.subscribe();
+	// interval(2021 / 10)
+	// 	.pipe(
+	// 		take(10),
+	// 		watch('medium', 'all'),
+	// 		filter((v: number) => v % 2 === 0),
+	// 		watch('medium', 'even'),
+	// 		map((v: number) => new BehaviorSubject(v * 1000)),
+	// 		watch('medium', 'mapped')
+	// 	)
+	// 	.subscribe();
 
-	interval(1021 / 10)
-		.pipe(
-			take(10),
-			watch('fast', 'all'),
-			filter((v: number) => v % 3 === 0),
-			watch('fast', 'n-th(3)')
-		)
-		.subscribe();
+	// interval(1021 / 10)
+	// 	.pipe(
+	// 		take(10),
+	// 		watch('fast', 'all'),
+	// 		filter((v: number) => v % 3 === 0),
+	// 		watch('fast', 'n-th(3)')
+	// 	)
+	// 	.subscribe();
 
-	interval(3328 / 10)
-		.pipe(
-			take(10),
-			watch('slow', 'all'),
-			filter((v: number) => v % 3 === 0),
-			watch('slow', 'n-th(3)')
-		)
-		.subscribe();
+	// interval(3328 / 10)
+	// 	.pipe(
+	// 		take(10),
+	// 		watch('slow', 'all'),
+	// 		filter((v: number) => v % 3 === 0),
+	// 		watch('slow', 'n-th(3)')
+	// 	)
+	// 	.subscribe();
 
 	function handleKeyDown(event: KeyboardEvent) {
 		let isShortcut = true;

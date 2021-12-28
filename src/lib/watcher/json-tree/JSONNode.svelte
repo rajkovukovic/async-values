@@ -7,8 +7,7 @@
 	import JSONValueNode from './JSONValueNode.svelte';
 	import ErrorNode from './ErrorNode.svelte';
 	import objType from './objType';
-	import { TimeStampView } from '../EventsView/TimeStampView';
-	import { timestampViewStream } from '../EventsView/preferences';
+	import { TimeStampView, timestampViewStream } from '$lib';
 
 	export let key, value, isParentExpanded, isParentArray;
 	$: nodeType = objType(value);

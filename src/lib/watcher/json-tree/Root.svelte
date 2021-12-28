@@ -1,6 +1,6 @@
-<script>
-	import JSONNode from './JSONNode.svelte';
+<script lang="ts">
 	import { setContext } from 'svelte';
+	import JSONNode from './JSONNode.svelte';
 	import contextKey from './context';
 
 	setContext(contextKey, {});
