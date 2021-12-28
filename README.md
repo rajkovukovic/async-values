@@ -1,3 +1,4 @@
 # async-values
 
-Readme coming soon
+## How to build
+`npm run package`

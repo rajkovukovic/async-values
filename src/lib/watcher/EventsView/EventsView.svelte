@@ -2,7 +2,7 @@
 	import { onDestroy, onMount } from 'svelte';
 	import { interval, BehaviorSubject } from 'rxjs';
 	import { filter, map, take } from 'rxjs/operators';
-	import { browser } from '$app/env';
+	// import { browser } from '$app/env';
 
 	import { MarblesView, watch } from '$lib';
 
@@ -75,15 +75,15 @@
 	}
 
 	function setKeyboardShorcuts(state: boolean) {
-		if (browser) {
+		// if (browser) {
 			if (state) {
-				window.addEventListener('keydown', handleKeyDown, true);
+				window?.addEventListener('keydown', handleKeyDown, true);
 				console.log('AsyncValues Watcher: keyboard shortcuts activated');
 			} else {
-				window.removeEventListener('keydown', handleKeyDown, true);
+				window?.removeEventListener('keydown', handleKeyDown, true);
 				console.log('AsyncValues Watcher: keyboard shortcuts deactivated');
 			}
-		}
+		// }
 	}
 
 	let marblesView: MarblesView;

@@ -1,6 +1,6 @@
 import { BehaviorSubject } from 'rxjs';
 import { skip } from 'rxjs/operators';
-import { browser } from '$app/env';
+// import { browser } from '$app/env';
 import { TimeStampView } from '$lib';
 
 class BehaviorSubjectWithSet<T> extends BehaviorSubject<T> {
@@ -32,14 +32,14 @@ function createLocalStorageStream<T>(
 
 	let existingValue: T = null;
 
-	if (browser) {
+	// if (browser) {
 		try {
 			const raw = localStorage.getItem(localStorageKey);
 			if (typeof raw === 'string') existingValue = JSON.parse(raw);
 		} catch (_) {
 			// noop
 		}
-	}
+	// }
 
 	const stream = new BehaviorSubjectWithSet<T>(existingValue ?? initialValue);
 

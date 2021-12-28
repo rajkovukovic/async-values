@@ -1,6 +1,3 @@
 export default class MapEntry {
-	constructor(key, value) {
-		this.key = key;
-		this.value = value;
-	}
+	constructor(public key, public value) {}
 }

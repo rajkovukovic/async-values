@@ -5,31 +5,31 @@ export * from './AsyncValue';
 export * from './asyncValueHelpers';
 
 // watcher: base
-export * from '$lib/watcher/EventsView/TimeStampView';
-export * from '$lib/watcher/EventsView/preferences';
+export * from './watcher/EventsView/TimeStampView';
+export * from './watcher/EventsView/preferences';
 export * from './watcher/AVWatch/AVStreamEventType';
 // watcher: json-tree
-export * from '$lib/watcher/json-tree/Root.svelte';
-export { default as JSONTree } from '$lib/watcher/json-tree/Root.svelte';
+export * from './watcher/json-tree/Root.svelte';
+export { default as JSONTree } from './watcher/json-tree/Root.svelte';
 // watcher: Marbles
-export { default as MarbleInfo } from '$lib/watcher/Marbles/MarbleInfo.svelte';
-export { default as AVValueMarble } from '$lib/watcher/Marbles/AVValueMarble.svelte';
-export { default as CompleteMarble } from '$lib/watcher/Marbles/CompleteMarble.svelte';
-export { default as ErrorMarble } from '$lib/watcher/Marbles/ErrorMarble.svelte';
-export { default as ValueMarble } from '$lib/watcher/Marbles/ValueMarble.svelte';
-export { default as GenericMarble } from '$lib/watcher/Marbles/GenericMarble.svelte';
+export { default as MarbleInfo } from './watcher/Marbles/MarbleInfo.svelte';
+export { default as AVValueMarble } from './watcher/Marbles/AVValueMarble.svelte';
+export { default as CompleteMarble } from './watcher/Marbles/CompleteMarble.svelte';
+export { default as ErrorMarble } from './watcher/Marbles/ErrorMarble.svelte';
+export { default as ValueMarble } from './watcher/Marbles/ValueMarble.svelte';
+export { default as GenericMarble } from './watcher/Marbles/GenericMarble.svelte';
 // watcher: EventDetailsView
-export * from '$lib/watcher/EventDetailsView/EventDetailsView.helpers';
-export { default as EventDetailsView } from '$lib/watcher/EventDetailsView/EventDetailsView.svelte';
-export { default as EventTree } from '$lib/watcher/EventDetailsView/EventTree.svelte';
+export * from './watcher/EventDetailsView/EventDetailsView.helpers';
+export { default as EventDetailsView } from './watcher/EventDetailsView/EventDetailsView.svelte';
+export { default as EventTree } from './watcher/EventDetailsView/EventTree.svelte';
 // watcher: MarblesView
-export * from '$lib/watcher/MarblesView/MarblesView.helpers';
-export { default as MarblesView } from '$lib/watcher/MarblesView/MarblesView.svelte';
-export { default as MarblesViewEventGrid } from '$lib/watcher/MarblesView/MarblesViewEventGrid.svelte';
-export { default as MarblesViewRowHeaders } from '$lib/watcher/MarblesView/MarblesViewRowHeaders.svelte';
+export * from './watcher/MarblesView/MarblesView.helpers';
+export { default as MarblesView } from './watcher/MarblesView/MarblesView.svelte';
+export { default as MarblesViewEventGrid } from './watcher/MarblesView/MarblesViewEventGrid.svelte';
+export { default as MarblesViewRowHeaders } from './watcher/MarblesView/MarblesViewRowHeaders.svelte';
 // watcher: EventsView
-export { default as EventsView } from '$lib/watcher/EventsView/EventsView.svelte';
-export { default as Preferences } from '$lib/watcher/EventsView/Preferences.svelte';
+export { default as EventsView } from './watcher/EventsView/EventsView.svelte';
+export { default as Preferences } from './watcher/EventsView/Preferences.svelte';
 // watcher: EventsView
 export * from './watcher/AVWatch/AVWatch.helpers';
 export * from './watcher/AVWatch/AVStreamEvent';
