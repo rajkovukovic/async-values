@@ -106,3 +106,5 @@ dist
 demo/lib
 
 .DS_Store
+
+package/
