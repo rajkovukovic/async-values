@@ -1,11 +1,11 @@
 {
 	"name": "async-values",
-	"version": "0.1.7",
+	"version": "0.2.0",
 	"license": "MIT",
 	"author": "Rajko Vukovic",
 	"type": "module",
-	"main": "index.umd.js",
-	"module": "index.es.js",
+	"main": "dist/index.umd.js",
+	"module": "dist/index.es.js",
 	"scripts": {
 		"dev": "svelte-kit dev",
 		"build": "svelte-kit build",

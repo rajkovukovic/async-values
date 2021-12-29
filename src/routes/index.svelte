@@ -18,7 +18,7 @@
 	import UserList from './components/UserList.svelte';
 	import TodoList from './components/TodoList.svelte';
 
-	onMount(() => AVWatch.activate(false));
+	onMount(() => AVWatch.activate(true));
 
 	onDestroy(() => AVWatch.deactivate());
 
@@ -36,7 +36,7 @@
 	});
 
 	const recursiveDataStream = new BehaviorSubjectWithSet(recursiveObject);
-	watchStream('recursiveData', recursiveDataStream);
+	// watchStream('recursiveData', recursiveDataStream);
 
 	const users = forceReFetch.pipe(
 		switchMapWhenFulfilled((shouldSucceed) =>

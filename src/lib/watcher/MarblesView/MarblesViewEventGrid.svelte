@@ -2,16 +2,22 @@
 	import type { Observable } from 'rxjs';
 	import { fade } from 'svelte/transition';
 	import { createEventDispatcher } from 'svelte';
-	import type { AVStreamEvent, StreamRowLayout } from '$lib';
-	import { GenericMarble } from '$lib';
+	import { AVStreamEvent, rowLayoutsToDashData, StreamRowLayout } from '$lib';
+	import { GenericMarble, hiddenStreams } from '$lib';
 
 	export let eventsStream: Observable<AVStreamEvent[]>;
+	export let rowLayoutsStream: Observable<Map<string, StreamRowLayout>>;
 	export let gridWidthStream: Observable<number>;
 	export let gridHeightStream: Observable<number>;
-	export let eventToRowLayout: (AVStreamEvent) => StreamRowLayout;
 	export let eventCellWidth;
 	export let eventCellHeight;
 	export let selectedEvent = null;
+
+	function eventToRowLayout(rowLayouts, event) {
+		return rowLayouts.get(`${event.streamName}::${event.streamPhase}`);
+	}
+
+	$: dashData = rowLayoutsToDashData($rowLayoutsStream);
 
 	const dispatch = createEventDispatcher();
 </script>
@@ -24,21 +30,26 @@
 	{#each $eventsStream as event, index}
 		<g
 			class="grid-row"
+			class:hidden={$hiddenStreams.has(event.streamName)}
 			class:selected={selectedEvent === event}
 			on:click={() => dispatch('select', event)}
 			transition:fade
 			transform="translate({(index + 0.5) * eventCellWidth} 0)"
 		>
-			<rect
+			<line
 				class="row-rect"
-				x={-eventCellWidth / 2 + 0.5}
-				width={eventCellWidth - 1}
-				height={$gridHeightStream}
-				fill="rgba(255, 255, 255, {(1 + (index % 5)) * 0.01})"
+				x1={0}
+				x2={0}
+				y1={dashData.offset}
+				y2={$gridHeightStream}
+				stroke-dasharray={dashData.dashArray}
+				stroke-width={eventCellWidth}
+				stroke="rgba(255, 255, 255, {(1 + (index % 5)) * 0.01})"
 			/>
 			<g
 				class="grid-cell"
-				transform="translate(0 {(eventToRowLayout(event)?.top ?? 0) + eventCellHeight / 2})"
+				transform="translate(0 {(eventToRowLayout($rowLayoutsStream, event)?.top ?? 0) +
+					eventCellHeight / 2})"
 			>
 				<rect
 					class="cell-rect"
@@ -57,9 +68,12 @@
 <style lang="scss">
 	.grid-row {
 		cursor: pointer;
+		&.hidden {
+			display: none;
+		}
 		&.selected {
 			& > .row-rect {
-				fill: rgba(255, 165, 0, 0.2);
+				stroke: rgba(255, 165, 0, 0.2);
 			}
 			& .cell-rect {
 				stroke-width: 1px;
@@ -68,7 +82,7 @@
 		}
 		&:hover {
 			& > .row-rect {
-				fill: rgba(255, 255, 255, 0.4);
+				stroke: rgba(255, 255, 255, 0.4);
 			}
 			& .cell-rect {
 				fill: rgba(255, 165, 0, 0.15);

@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { slide } from 'svelte/transition';
 	import type { Observable } from 'rxjs';
-	import { AVStreamEvent, EventDetailsHeadline } from '$lib';
+	import { AVStreamEvent, EventDetailsHeadline, hiddenStreams, toggleStreamVisibility } from '$lib';
 	import {
 		AVStreamEventType,
 		AVWatch,
@@ -25,6 +24,10 @@
 		$showAppFullStateStream && $visibleStreams
 			? getAppStateAtEvent($visibleStreams, selectedEvent, $eventsStream)
 			: null;
+
+	function hiddenStreamsArray(streamName: string) {
+		throw new Error('Function not implemented.');
+	}
 </script>
 
 <div class="event-view">
@@ -53,58 +56,62 @@
 		{#if $showAppFullStateStream}
 			{#if appState}
 				{#each [...appState.entries()] as [streamName, phaseMap]}
-					<div class="stream-info">
-						<div class="stream-name">{streamName}</div>
-						{#each [...phaseMap.entries()] as [phaseName, event], index (phaseName)}
-							<div class="phase-info">
-								<span class="phase-name">
-									{phaseName}
-								</span>
-								{#if !event}
-									- no events
-								{:else if !$showEventDetailsStream}
-									{#if event.type === AVStreamEventType.error || event.type === AVStreamEventType.avError}
-										<span style="color: red;">({event.type})</span>
-									{:else if event.type === AVStreamEventType.complete || event.type === AVStreamEventType.avPending}
-										<span>({event.type})</span>
+					<div class="stream-info" class:hidden={$hiddenStreams.has(streamName)}>
+						<div class="stream-name clickable" on:click={() => toggleStreamVisibility(streamName)}>
+							{streamName}
+						</div>
+						{#if !$hiddenStreams.has(streamName)}
+							{#each [...phaseMap.entries()] as [phaseName, event], index (phaseName)}
+								<div class="phase-info">
+									<span class="phase-name">
+										{phaseName}
+									</span>
+									{#if !event}
+										- no events
+									{:else if !$showEventDetailsStream}
+										{#if event.type === AVStreamEventType.error || event.type === AVStreamEventType.avError}
+											<span style="color: red;">({event.type})</span>
+										{:else if event.type === AVStreamEventType.complete || event.type === AVStreamEventType.avPending}
+											<span>({event.type})</span>
+										{/if}
 									{/if}
-								{/if}
-								{#if event}
-									{#key event?.id}
-										<div transition:slide>
-											<EventTree {event} showDetails={$showEventDetailsStream} />
-										</div>
-									{/key}
-								{/if}
-							</div>
-						{/each}
+									{#if event}
+										{#key event?.id}
+												<EventTree {event} showDetails={$showEventDetailsStream}/>
+										{/key}
+									{/if}
+								</div>
+							{/each}
+						{/if}
 					</div>
 				{/each}
 			{/if}
 		{:else if selectedEvent}
-			<div><span class="event-view-label">streamName : </span>{selectedEvent.streamName}</div>
-			<div><span class="event-view-label">streamPhase: </span>{selectedEvent.streamPhase}</div>
+			<div class="selected-event-view">
+				<div><span class="event-view-label">streamName : </span>{selectedEvent.streamName}</div>
+				<div><span class="event-view-label">streamPhase: </span>{selectedEvent.streamPhase}</div>
 
-			<div class="event-view-headline">Selected Event:</div>
-			<EventDetailsHeadline event={selectedEvent} showDetails={$showEventDetailsStream} />
+				<div class="event-view-headline">Selected Event:</div>
+				<EventDetailsHeadline event={selectedEvent} showDetails={$showEventDetailsStream} />
 
-			<div class="event-view-headline">
-				{#if !previousEvent}
-					No previous event
-				{:else}
-					Previous event of same phase:
+				<div class="event-view-headline">
+					{#if !previousEvent}
+						No previous event
+					{:else}
+						Previous event of same phase:
+					{/if}
+				</div>
+				{#if previousEvent}
+					<EventDetailsHeadline event={previousEvent} showDetails={$showEventDetailsStream} />
 				{/if}
 			</div>
-			{#if previousEvent}
-				<EventDetailsHeadline event={previousEvent} showDetails={$showEventDetailsStream} />
-			{/if}
 		{:else}
-			Select an event to see info
+			<div class="selected-event-view">Select an event to see info</div>
 		{/if}
 	</div>
 </div>
 
-<style>
+<style lang="scss">
 	.event-view {
 		min-height: 0;
 		display: grid;
@@ -124,7 +131,6 @@
 	.event-view-content {
 		position: relative;
 		overflow: auto;
-		padding: 16px;
 	}
 
 	.event-view-headline {
@@ -139,14 +145,19 @@
 	}
 
 	.stream-info {
-		margin-bottom: 2em;
+		&:not(.hidden) {
+			margin-bottom: 2em;
+		}
+		&.hidden {
+			& > .stream-name {
+				filter: brightness(140%) grayscale(90%);
+			}
+		}
 	}
 
 	.stream-name {
 		position: sticky;
-		top: -16px;
 		z-index: 1;
-		margin: -8px -16px;
 		padding: 8px 16px;
 		background: rgb(5, 26, 39);
 	}
@@ -158,5 +169,10 @@
 
 	.phase-name {
 		color: #bc80b3;
+	}
+
+	.event-tree,
+	.selected-event-view {
+		padding: 16px;
 	}
 </style>

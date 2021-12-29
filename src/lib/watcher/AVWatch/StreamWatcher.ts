@@ -7,13 +7,16 @@ export class StreamWatcher {
 	private _events = new BehaviorSubject<AVStreamEvent[]>([]);
 	private _eventCount = this._events.pipe(map((events) => events.length));
 
-	public get eventCount(): Observable<number> {
-		return this._eventCount;
-	}
 	private _phases = new BehaviorSubject(new Map<string, StreamPhaseWatcher>());
 	private _phaseCount = this._phases.pipe(map((phases) => phases.size));
 
 	constructor(public streamName: string) {}
+
+	public hidden = false;
+
+	public get eventCount(): Observable<number> {
+		return this._eventCount;
+	}
 
 	public get events(): Observable<AVStreamEvent[]> {
 		return this._events.asObservable();

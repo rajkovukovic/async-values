@@ -3,7 +3,7 @@
 	import { asyncScheduler, Observable, BehaviorSubject } from 'rxjs';
 	import { distinctUntilChanged, map, shareReplay, throttleTime } from 'rxjs/operators';
 	import { afterUpdate } from 'svelte';
-	import type { AVStreamEvent, StreamRenderingInfo } from '$lib';
+	import { AVStreamEvent, hiddenStreams, MarblesViewRowNames, StreamRenderingInfo } from '$lib';
 	import {
 		AVWatch,
 		EventDetailsView,
@@ -13,6 +13,8 @@
 	} from '$lib';
 
 	export let hidden = false;
+
+	$: AVWatch.setHiddenStreams($hiddenStreams);
 
 	const eventsStream: Observable<AVStreamEvent[]> = AVWatch.events.pipe(
 		throttleTime(850, asyncScheduler, { leading: true, trailing: true }),
@@ -28,25 +30,39 @@
 		}
 	};
 
-	export const selectFirstEvent = () => selectEvent(0);
+	export const selectFirstEvent = (startingFromIndex: number) => {
+		for (let index = startingFromIndex ?? 0; index < $eventsStream.length; index++) {
+			const event = $eventsStream[index];
+			if (!$hiddenStreams.has(event.streamName)) {
+				selectEvent(index);
+				break;
+			}
+		}
+	};
 
-	export const selectLastEvent = () => selectEvent($eventsStream.length - 1);
+	export const selectLastEvent = (startingFromIndex: number) => {
+		for (let index = startingFromIndex ?? $eventsStream.length - 1; index >= 0; index--) {
+			const event = $eventsStream[index];
+			if (!$hiddenStreams.has(event.streamName)) {
+				selectEvent(index);
+				break;
+			}
+		}
+	};
 
 	export const selectPrevEvent = (ofSamePhase = false) =>
-		selectEvent(
-			selectedEvent && !ofSamePhase
-				? selectedEvent.id - 1
-				: AVWatch.eventInSamePhase(selectedEvent, -1)?.id ??
+		ofSamePhase
+			? selectEvent(
+					AVWatch.eventInSamePhase(selectedEvent, -1)?.id ??
 						selectedEvent?.id ??
 						$eventsStream.length - 1
-		);
+			  )
+			: selectLastEvent(selectedEvent ? selectedEvent.id - 1 : null);
 
 	export const selectNextEvent = (ofSamePhase = false) =>
-		selectEvent(
-			selectedEvent && !ofSamePhase
-				? selectedEvent.id + 1
-				: AVWatch.eventInSamePhase(selectedEvent, 1)?.id ?? selectedEvent?.id ?? 0
-		);
+		ofSamePhase
+			? selectEvent(AVWatch.eventInSamePhase(selectedEvent, 1)?.id ?? selectedEvent?.id ?? 0)
+			: selectFirstEvent(selectedEvent ? selectedEvent.id + 1 : null);
 
 	export const scrollToEvent = (indexOrEventId: number) => {
 		const scrollX = indexOrEventId * eventCellWidth - $clientWidthStream / 2 + gridHorzPadding;
@@ -130,6 +146,10 @@
 
 	let selectedEvent: AVStreamEvent;
 
+	$: if (selectedEvent && $hiddenStreams.has(selectedEvent.streamName)) {
+		selectedEvent = null;
+	}
+
 	const scrollPositionStream = new BehaviorSubject(0);
 
 	// const firstVisibleEventIndex = scrollPositionStream.pipe(
@@ -165,14 +185,14 @@
 							{eventCellWidth}
 							{eventCellHeight}
 							{eventsStream}
-							eventToRowLayout={(event) =>
-								$rowLayoutsStream.get(`${event.streamName}::${event.streamPhase}`)}
+							{rowLayoutsStream}
 							on:select={(event) => (selectedEvent = event.detail)}
 							{selectedEvent}
 						/>
 					{/if}
 				</div>
 			</div>
+			<MarblesViewRowNames {rowLayoutsStream} />
 		{/if}
 	</div>
 

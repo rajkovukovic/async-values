@@ -1,5 +1,5 @@
 import { BehaviorSubject } from 'rxjs';
-import { skip } from 'rxjs/operators';
+import { map, shareReplay, skip } from 'rxjs/operators';
 // import { browser } from '$app/env';
 import { TimeStampView } from '$lib';
 
@@ -17,6 +17,26 @@ export const timestampViewStream = createLocalStorageStream(
 export const showAppFullStateStream = createLocalStorageStream(true, 'ShowAppFullState');
 
 export const showEventDetailsStream = createLocalStorageStream(false, 'ShowEventDetails');
+
+const hiddenStreamsArray = createLocalStorageStream([], 'HiddenStreams');
+export const hiddenStreams = hiddenStreamsArray.pipe(
+	map((hiddenStreamsArray) => new Set(hiddenStreamsArray)),
+	shareReplay(1)
+);
+
+/**
+ *
+ * Toggles visibility of a stream
+ * @param streamName
+ * @returns true if the stream is visible after toggling
+ */
+export function toggleStreamVisibility(streamName: string): boolean {
+	const index = hiddenStreamsArray.value.indexOf(streamName);
+	if (index < 0) hiddenStreamsArray.value.push(streamName);
+	else hiddenStreamsArray.value.splice(index, 1);
+	hiddenStreamsArray.next(hiddenStreamsArray.value);
+	return index < 0;
+}
 
 /**
  *

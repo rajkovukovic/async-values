@@ -21,15 +21,24 @@ class AVWatchClass {
 	private _streams = new BehaviorSubject(new Map<string, StreamWatcher>());
 	private _streamCount = this._streams.pipe(map((streams) => streams.size));
 
-	private _streamNameQuery = new BehaviorSubject<string>('');
-	private _visibleStreams = this._streams.pipe(
-		map((streamsMap) => [...streamsMap.values()]),
+	private _hiddenStreams = new BehaviorSubject<Set<string>>(new Set());
+	private _visibleStreams = combineLatest([this._streams, this._hiddenStreams]).pipe(
+		map(([streamsMap, hiddenStreams]) =>
+			[...streamsMap.values()].map((streamWatcher) => {
+				streamWatcher.hidden = hiddenStreams.has(streamWatcher.streamName);
+				return streamWatcher;
+			})
+		),
 		switchMap((streams) =>
 			combineLatest(
 				streams.map((stream) =>
 					stream.phases.pipe(
 						map((phases) => Array.from(phases.values()).map((phase) => phase.phaseName)),
-						map((phaseNames) => ({ name: stream.streamName, phases: phaseNames }))
+						map((phaseNames) => ({
+							name: stream.streamName,
+							phases: phaseNames,
+							hidden: stream.hidden
+						}))
 					)
 				)
 			)
@@ -82,8 +91,8 @@ class AVWatchClass {
 		return this._initTimestamp;
 	}
 
-	public filterByStreamName(query: string) {
-		this._streamNameQuery.next(query.trim().toLocaleLowerCase());
+	public setHiddenStreams(hiddenStreams: Set<string>): void {
+		this._hiddenStreams.next(hiddenStreams);
 	}
 
 	public get visibleStreams(): Observable<StreamRenderingInfo[]> {
