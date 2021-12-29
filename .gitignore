@@ -106,3 +106,9 @@ dist
 demo/lib
 
 .DS_Store
+
+package/
+
+.svelte-kit/
+
+build/
