@@ -52,7 +52,7 @@ export default [
 		input: 'src/lib/index.ts',
 		treeshake: { moduleSideEffects: false },
 		output:
-			{ file: `dist/${pkg.module}`, format: 'es', sourcemap: true },
+			{ file: `${pkg.module}`, format: 'es', sourcemap: true },
 		plugins: [
 			...beforeTypescriptPlugins,
 			typescript2({ tsconfig: 'tsconfig.build.json' }),
@@ -64,8 +64,8 @@ export default [
 		input: 'src/lib/index.ts',
 		treeshake: { moduleSideEffects: false },
 		output: [
-			{ file: `dist/${pkg.module}`, format: 'es', sourcemap: true },
-			{ file: `dist/${pkg.main}`, format: 'umd', name: pkg.name, sourcemap: true }
+			{ file: `${pkg.module}`, format: 'es', sourcemap: true },
+			{ file: `${pkg.main}`, format: 'umd', name: pkg.name, sourcemap: true }
 		],
 		plugins: [
 			...beforeTypescriptPlugins,

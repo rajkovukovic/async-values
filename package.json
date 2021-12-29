@@ -1,6 +1,6 @@
 {
 	"name": "async-values",
-	"version": "0.2.0",
+	"version": "0.2.3",
 	"license": "MIT",
 	"author": "Rajko Vukovic",
 	"type": "module",
@@ -10,7 +10,6 @@
 		"dev": "svelte-kit dev",
 		"build": "svelte-kit build",
 		"package": "rm -rf ./dist && rollup -c",
-		"publish": "npm publish ./package",
 		"preview": "svelte-kit preview",
 		"check": "svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
