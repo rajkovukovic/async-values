@@ -7,12 +7,12 @@
 
 	function getRelevantData(event: AVStreamEvent) {
 		switch (event?.type) {
-			case AVStreamEventType.avPending:
+			case AVStreamEventType.avValue:
 				return event.data.value;
 			case AVStreamEventType.avError:
 				return event.data.error;
 			default:
-				return undefined;
+				return event.data;
 		}
 	}
 
@@ -45,10 +45,17 @@
 				};
 		}
 	}
+
+	const eventTypeWithData = new Set([
+		AVStreamEventType.value,
+		AVStreamEventType.error,
+		AVStreamEventType.avValue,
+		AVStreamEventType.avError
+	]);
 </script>
 
-{#if event}
-	<JSONTree value={showDetails ? getDisplayInfo(event) : event.data} />
+{#if event && (showDetails || (!showDetails && eventTypeWithData.has(event.type)))}
+	<JSONTree value={showDetails ? getDisplayInfo(event) : getRelevantData(event)} />
 {/if}
 
 <style>

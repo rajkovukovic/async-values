@@ -110,3 +110,5 @@ demo/lib
 package/
 
 .svelte-kit/
+
+build/

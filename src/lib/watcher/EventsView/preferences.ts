@@ -3,7 +3,7 @@ import { skip } from 'rxjs/operators';
 // import { browser } from '$app/env';
 import { TimeStampView } from '$lib';
 
-class BehaviorSubjectWithSet<T> extends BehaviorSubject<T> {
+export class BehaviorSubjectWithSet<T> extends BehaviorSubject<T> {
 	set(value: T): void {
 		super.next(value);
 	}

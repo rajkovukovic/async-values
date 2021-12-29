@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { slide } from 'svelte/transition';
 	import type { Observable } from 'rxjs';
-	import type { AVStreamEvent } from '$lib';
+	import { AVStreamEvent, EventDetailsHeadline } from '$lib';
 	import {
 		AVStreamEventType,
 		AVWatch,
@@ -86,7 +86,7 @@
 			<div><span class="event-view-label">streamPhase: </span>{selectedEvent.streamPhase}</div>
 
 			<div class="event-view-headline">Selected Event:</div>
-			<EventTree event={selectedEvent} showDetails={$showEventDetailsStream} />
+			<EventDetailsHeadline event={selectedEvent} showDetails={$showEventDetailsStream} />
 
 			<div class="event-view-headline">
 				{#if !previousEvent}
@@ -96,7 +96,7 @@
 				{/if}
 			</div>
 			{#if previousEvent}
-				<EventTree event={previousEvent} showDetails={$showEventDetailsStream} />
+				<EventDetailsHeadline event={previousEvent} showDetails={$showEventDetailsStream} />
 			{/if}
 		{:else}
 			Select an event to see info

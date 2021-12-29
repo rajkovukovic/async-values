@@ -23,38 +23,60 @@
 >
 	{#each $eventsStream as event, index}
 		<g
+			class="grid-row"
 			class:selected={selectedEvent === event}
 			on:click={() => dispatch('select', event)}
 			transition:fade
-			transform="translate({(index + 0.5) * eventCellWidth} {(eventToRowLayout(event)?.top ?? 0) +
-				eventCellHeight / 2})"
+			transform="translate({(index + 0.5) * eventCellWidth} 0)"
 		>
 			<rect
-				x={-eventCellWidth / 2}
-				y={-eventCellWidth / 2}
-				width={eventCellWidth}
-				height={eventCellWidth}
+				class="row-rect"
+				x={-eventCellWidth / 2 + 0.5}
+				width={eventCellWidth - 1}
+				height={$gridHeightStream}
+				fill="rgba(255, 255, 255, {(1 + (index % 5)) * 0.01})"
 			/>
-			<GenericMarble {event} size={eventCellWidth / 2} />
+			<g
+				class="grid-cell"
+				transform="translate(0 {(eventToRowLayout(event)?.top ?? 0) + eventCellHeight / 2})"
+			>
+				<rect
+					class="cell-rect"
+					x={-eventCellWidth / 2}
+					y={-eventCellHeight / 2}
+					fill="none"
+					width={eventCellWidth}
+					height={eventCellHeight}
+				/>
+				<GenericMarble {event} size={eventCellWidth / 2} />
+			</g>
 		</g>
 	{/each}
 </svg>
 
 <style lang="scss">
-	g {
+	.grid-row {
 		cursor: pointer;
-		&.selected rect {
-			stroke-width: 1px;
-			fill: rgba(255, 255, 255, 0.1);
-			stroke: orange;
+		&.selected {
+			& > .row-rect {
+				fill: rgba(255, 165, 0, 0.2);
+			}
+			& .cell-rect {
+				stroke-width: 1px;
+				stroke: orange;
+			}
 		}
-		&:hover rect {
-			fill: rgba(255, 255, 255, 0.4);
+		&:hover {
+			& > .row-rect {
+				fill: rgba(255, 255, 255, 0.4);
+			}
+			& .cell-rect {
+				fill: rgba(255, 165, 0, 0.15);
+			}
 		}
 	}
 
 	rect {
-		fill: rgba(255, 255, 255, 0.004);
 		transition: fill 0.3s;
 	}
 </style>

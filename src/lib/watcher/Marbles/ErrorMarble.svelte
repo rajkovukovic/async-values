@@ -7,4 +7,6 @@
 </script>
 
 <polygon points="0,{-size / 2} {-size / 2},{size / 2} {size / 2},{size / 2}" fill="#9B3030" />
-<MarbleInfo info={event?.ordinal ?? '-'} />
+	<g transform="translate(0 {size/ 6})">
+	<MarbleInfo info={event?.ordinal ?? '-'} />
+</g>

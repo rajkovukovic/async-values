@@ -21,7 +21,7 @@
 <style>
 	.rotate {
 		opacity: 0.4;
-		animation: rotate 8s infinite linear;
+		/* animation: rotate 8s infinite linear; */
 	}
 
 	.pulse {

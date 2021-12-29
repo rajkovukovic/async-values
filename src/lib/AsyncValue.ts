@@ -1,5 +1,8 @@
+import { fromFetch } from 'rxjs/fetch';
 import type { AsyncError, ConvertibleToAsyncError } from '$lib';
 import { isNotEmptyValue, MultiStateAsyncValue } from '$lib';
+import { map, startWith, switchMap } from 'rxjs/operators';
+import type { Observable } from 'rxjs';
 
 /**
  * AsyncValue can have only one of [value, pending, error] set at any time
@@ -70,7 +73,7 @@ export class AsyncValue<T> extends MultiStateAsyncValue<T> {
 		super._pending = false;
 	}
 
-	setErrorFrom(nextError: ConvertibleToAsyncError) {
+	setErrorFrom(nextError: ConvertibleToAsyncError): void {
 		super.setErrorFrom(nextError);
 		super._pending = false;
 		super._value = null;
@@ -81,5 +84,13 @@ export class AsyncValue<T> extends MultiStateAsyncValue<T> {
 	 */
 	clone(): AsyncValue<T> {
 		return new AsyncValue(this._value, this._pending, this._error);
+	}
+
+	static fetchAndParseResponse<T = any>(input: string | Request, init?: RequestInit): Observable<AsyncValue<T>> {
+		return fromFetch(input, init).pipe(
+			switchMap((response) => response.json()),
+			map((value: T) => AsyncValue.valueOnly(value)),
+			startWith(AsyncValue.pendingOnly<T>())
+		);
 	}
 }

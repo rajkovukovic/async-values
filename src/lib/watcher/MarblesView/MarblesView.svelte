@@ -12,6 +12,8 @@
 		MarblesViewEventGrid
 	} from '$lib';
 
+	export let hidden = false;
+
 	const eventsStream: Observable<AVStreamEvent[]> = AVWatch.events.pipe(
 		throttleTime(850, asyncScheduler, { leading: true, trailing: true }),
 		shareReplay(1)
@@ -146,7 +148,7 @@
 	// );
 </script>
 
-<div class="marbles-view">
+<div class="marbles-view" class:hidden>
 	<div bind:clientWidth={$clientWidthStream} class="marbles-diagram">
 		{#if $visibleStreams}
 			<MarblesViewRowHeaders {rowLayoutsStream} />
@@ -183,8 +185,10 @@
 		grid-template-columns: 1fr 320px;
 		grid-template-rows: 1fr;
 		max-height: 100%;
-		background: rgb(12, 12, 12);
 		color: white;
+		&.hidden {
+			display: none;
+		}
 	}
 
 	.marbles-diagram {

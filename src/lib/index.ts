@@ -20,6 +20,7 @@ export { default as ValueMarble } from './watcher/Marbles/ValueMarble.svelte';
 export { default as GenericMarble } from './watcher/Marbles/GenericMarble.svelte';
 // watcher: EventDetailsView
 export * from './watcher/EventDetailsView/EventDetailsView.helpers';
+export { default as EventDetailsHeadline } from './watcher/EventDetailsView/EventDetailsHeadline.svelte';
 export { default as EventDetailsView } from './watcher/EventDetailsView/EventDetailsView.svelte';
 export { default as EventTree } from './watcher/EventDetailsView/EventTree.svelte';
 // watcher: MarblesView
@@ -28,6 +29,7 @@ export { default as MarblesView } from './watcher/MarblesView/MarblesView.svelte
 export { default as MarblesViewEventGrid } from './watcher/MarblesView/MarblesViewEventGrid.svelte';
 export { default as MarblesViewRowHeaders } from './watcher/MarblesView/MarblesViewRowHeaders.svelte';
 // watcher: EventsView
+export { default as Instructions } from './watcher/EventsView/Instructions.svelte';
 export { default as EventsView } from './watcher/EventsView/EventsView.svelte';
 export { default as Preferences } from './watcher/EventsView/Preferences.svelte';
 // watcher: EventsView
