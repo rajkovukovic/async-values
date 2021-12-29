@@ -9,7 +9,7 @@
 	import objType from './objType';
 	import { TimeStampView, timestampViewStream } from '$lib';
 
-	export let key, value, isParentExpanded, isParentArray;
+	export let key, value, isParentExpanded, isParentArray, depth;
 	$: nodeType = objType(value);
 	$: componentType = getComponent(nodeType);
 	$: valueGetter = getValueGetter(nodeType, $timestampViewStream);
@@ -90,6 +90,7 @@
 
 <svelte:component
 	this={componentType}
+	depth={depth + 1}
 	{key}
 	{value}
 	{isParentExpanded}

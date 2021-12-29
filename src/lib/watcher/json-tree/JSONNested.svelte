@@ -14,6 +14,7 @@
 		isArray = false,
 		bracketOpen,
 		bracketClose;
+	export let depth;
 	export let previewKeys = keys;
 	export let getKey = (key) => key;
 	export let getValue = (key) => key;
@@ -40,6 +41,7 @@
 </script>
 
 <li class:indent={isParentExpanded}>
+	<!-- svelte-ignore a11y-label-has-associated-control -->
 	<label>
 		{#if expandable && isParentExpanded}
 			<JSONArrow on:click={toggleExpand} {expanded} />
@@ -58,6 +60,7 @@
 			{#each slicedKeys as key, index}
 				<JSONNode
 					key={getKey(key)}
+					depth={depth + 1}
 					isParentExpanded={expanded}
 					isParentArray={isArray}
 					value={expanded ? getValue(key) : getPreviewValue(key)}

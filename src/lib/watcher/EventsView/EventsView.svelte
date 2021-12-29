@@ -78,7 +78,7 @@
 		z-index: 1000000000;
 		background: rgb(12, 12, 12);
 		color: white;
-		font-family: "Courier New", Courier, monospace;
+		font-family: 'Courier New', Courier, monospace;
 		font-size: 12px;
 	}
 

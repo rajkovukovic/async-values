@@ -1,7 +1,7 @@
 <script>
 	import JSONNested from './JSONNested.svelte';
 
-	export let key, value, isParentExpanded, isParentArray, nodeType;
+	export let key, value, isParentExpanded, isParentArray, nodeType, depth;
 
 	let keys = [];
 
@@ -29,6 +29,7 @@
 	{keys}
 	{getKey}
 	{getValue}
+	depth={depth + 1}
 	isArray={true}
 	label="{nodeType}({keys.length})"
 	bracketOpen={'{'}

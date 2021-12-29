@@ -35,7 +35,7 @@ function createOberver<T>(streamName: string, streamPhase: string): PartialObser
 				)
 			);
 		}
-	}
+	};
 }
 
 export function watch<T>(streamName: string, streamPhase: string): MonoTypeOperatorFunction<T> {

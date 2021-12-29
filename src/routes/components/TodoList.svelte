@@ -19,10 +19,10 @@
 	{:else if $todos?.value}
 		{#each $todos?.value as todo (todo.id)}
 			<ion-item>
-					{todo.completed ? '✓' : '⌑'}&nbsp;&nbsp;&nbsp;
-					<ion-text>
-						{todo.title}
-					</ion-text>
+				{todo.completed ? '✓' : '⌑'}&nbsp;&nbsp;&nbsp;
+				<ion-text>
+					{todo.title}
+				</ion-text>
 			</ion-item>
 		{/each}
 	{/if}

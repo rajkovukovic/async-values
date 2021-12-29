@@ -2,7 +2,7 @@
 	import JSONNested from './JSONNested.svelte';
 	import MapEntry from './utils/MapEntry';
 
-	export let key, value, isParentExpanded, isParentArray, nodeType;
+	export let key, value, isParentExpanded, isParentArray, nodeType, depth;
 
 	let keys = [];
 
@@ -29,6 +29,7 @@
 	{keys}
 	{getKey}
 	{getValue}
+	depth={depth + 1}
 	label="{nodeType}({keys.length})"
 	colon=""
 	bracketOpen={'{'}

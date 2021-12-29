@@ -86,7 +86,10 @@ export class AsyncValue<T> extends MultiStateAsyncValue<T> {
 		return new AsyncValue(this._value, this._pending, this._error);
 	}
 
-	static fetchAndParseResponse<T = any>(input: string | Request, init?: RequestInit): Observable<AsyncValue<T>> {
+	static fetchAndParseResponse<T = any>(
+		input: string | Request,
+		init?: RequestInit
+	): Observable<AsyncValue<T>> {
 		return fromFetch(input, init).pipe(
 			switchMap((response) => response.json()),
 			map((value: T) => AsyncValue.valueOnly(value)),

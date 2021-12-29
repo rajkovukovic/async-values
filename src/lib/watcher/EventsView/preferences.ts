@@ -33,12 +33,12 @@ function createLocalStorageStream<T>(
 	let existingValue: T = null;
 
 	// if (browser) {
-		try {
-			const raw = localStorage.getItem(localStorageKey);
-			if (typeof raw === 'string') existingValue = JSON.parse(raw);
-		} catch (_) {
-			// noop
-		}
+	try {
+		const raw = localStorage.getItem(localStorageKey);
+		if (typeof raw === 'string') existingValue = JSON.parse(raw);
+	} catch (_) {
+		// noop
+	}
 	// }
 
 	const stream = new BehaviorSubjectWithSet<T>(existingValue ?? initialValue);

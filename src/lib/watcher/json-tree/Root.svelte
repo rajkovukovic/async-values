@@ -10,7 +10,7 @@
 </script>
 
 <ul>
-	<JSONNode {key} {value} isParentExpanded={true} isParentArray={false} />
+	<JSONNode depth={0} {key} {value} isParentExpanded={true} isParentArray={false} />
 </ul>
 
 <style>

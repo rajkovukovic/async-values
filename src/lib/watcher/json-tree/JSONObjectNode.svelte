@@ -1,8 +1,8 @@
-<script>
+<script lang="ts">
 	import JSONNested from './JSONNested.svelte';
 
-	export let key, value, isParentExpanded, isParentArray, nodeType;
-	export let expanded = true;
+	export let key, value, isParentExpanded, isParentArray, nodeType, depth;
+	export let expanded;
 
 	$: keys = Object.getOwnPropertyNames(value);
 
@@ -13,10 +13,11 @@
 
 <JSONNested
 	{key}
-	{expanded}
+	expanded={expanded ?? depth <= 6}
 	{isParentExpanded}
 	{isParentArray}
 	{keys}
+	depth={depth + 1}
 	previewKeys={keys}
 	{getValue}
 	label="{nodeType} "
