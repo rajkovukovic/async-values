@@ -1,4 +1,4 @@
-import adapter from '@sveltejs/adapter-auto';
+// import adapter from '@sveltejs/adapter-auto';
 import staticAdapter from '@sveltejs/adapter-static';
 import preprocess from 'svelte-preprocess';
 
@@ -9,9 +9,7 @@ const config = {
 	kit: {
 		// adapter: adapter(),
 		adapter: staticAdapter({
-			pages: 'build',
-			assets: 'build',
-			fallback: 'index.html',
+			// base: "/async-values",
 			precompress: false
 		}),
 
