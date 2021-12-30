@@ -10,7 +10,7 @@
 	{#each Array.from($rowLayoutsStream.values()) as rowLayout}
 		<div
 			class="header-row-label clickable"
-			style="left: 0; top: {rowLayout.top}px;"
+			style="left: 0; top: {rowLayout.top}px; height: {rowLayout.height}px;"
 			class:clickable={rowLayout.header}
 			on:click={() => rowLayout.header && toggleStreamVisibility(rowLayout.label)}
 		>
@@ -32,7 +32,10 @@
 
 	.header-row-label {
 		position: absolute;
-		padding: 8px;
+		padding: 0 8px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
 		white-space: nowrap;
 		&.clickable {
 			background: rgb(5, 26, 39);
