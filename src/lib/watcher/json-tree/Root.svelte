@@ -2,6 +2,7 @@
 	import { setContext } from 'svelte';
 	import JSONNode from './JSONNode.svelte';
 	import contextKey from './context';
+	import { jsonTreeExpandedLevel } from '$lib';
 
 	setContext(contextKey, {});
 
@@ -10,7 +11,13 @@
 </script>
 
 <ul>
-	<JSONNode depth={0} {key} {value} isParentExpanded={true} isParentArray={false} />
+	<JSONNode
+		depth={0}
+		{key}
+		{value}
+		isParentExpanded={$jsonTreeExpandedLevel > 0}
+		isParentArray={false}
+	/>
 </ul>
 
 <style>

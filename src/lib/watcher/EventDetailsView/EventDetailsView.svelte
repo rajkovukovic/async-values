@@ -1,14 +1,18 @@
 <script lang="ts">
 	import type { Observable } from 'rxjs';
-	import { AVStreamEvent, EventDetailsHeadline, hiddenStreams, toggleStreamVisibility } from '$lib';
+	import { slide } from 'svelte/transition';
 	import {
+		AVStreamEvent,
 		AVStreamEventType,
 		AVWatch,
+		EventDetailsHeadline,
 		EventTree,
 		getAppStateAtEvent,
+		hiddenStreams,
 		showAppFullStateStream,
 		showEventDetailsStream,
 		StreamRenderingInfo,
+		toggleStreamVisibility,
 	} from '$lib';
 
 	export let selectedEvent: AVStreamEvent;
@@ -77,7 +81,9 @@
 									{/if}
 									{#if event}
 										{#key event?.id}
-											<EventTree {event} showDetails={$showEventDetailsStream} />
+											<div transition:slide>
+												<EventTree {event} showDetails={$showEventDetailsStream} />
+											</div>
 										{/key}
 									{/if}
 								</div>

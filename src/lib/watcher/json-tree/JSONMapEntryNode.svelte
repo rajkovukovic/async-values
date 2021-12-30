@@ -12,7 +12,7 @@
 </script>
 
 <JSONNested
-	depth={depth + 1}
+	{depth}
 	{expanded}
 	{isParentExpanded}
 	{isParentArray}

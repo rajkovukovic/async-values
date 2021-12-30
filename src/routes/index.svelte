@@ -30,13 +30,13 @@
 		a: [recursiveObject],
 		b: 2,
 		c: {
-			d: { self: recursiveObject },
+			d: { e: { self: recursiveObject } },
 		},
 		m: new Map([['some key', recursiveObject]]),
 	});
 
 	const recursiveDataStream = new BehaviorSubjectWithSet(recursiveObject);
-	// watchStream('recursiveData', recursiveDataStream);
+	watchStream('recursiveData', recursiveDataStream);
 
 	const users = forceReFetch.pipe(
 		switchMapWhenFulfilled((shouldSucceed) =>

@@ -7,7 +7,7 @@
 	import JSONValueNode from './JSONValueNode.svelte';
 	import ErrorNode from './ErrorNode.svelte';
 	import objType from './objType';
-	import { TimeStampView, timestampViewStream } from '$lib';
+	import { appStartTimestamp, TimeStampView, timestampViewStream } from '$lib';
 
 	export let key, value, isParentExpanded, isParentArray, depth;
 	$: nodeType = objType(value);
@@ -69,8 +69,8 @@
 						return (raw) => raw.toISOString();
 					case TimeStampView.absoluteTime:
 						return (raw) => raw.toISOString().split('T')[1].split('Z')[0];
-					case TimeStampView.timeSinceAppStart:
-						return (raw) => `[ ${formatMilliSeconds(raw - raw.initTimestamp)} ]`;
+					case TimeStampView.sinceAppStart:
+						return (raw) => `[ ${formatMilliSeconds(raw - $appStartTimestamp)} ]`;
 					default:
 						return (raw) =>
 							raw.previousTimestamp ? '+' + formatMilliSeconds(raw - raw.previousTimestamp) : '0';
@@ -90,7 +90,7 @@
 
 <svelte:component
 	this={componentType}
-	depth={depth + 1}
+	{depth}
 	{key}
 	{value}
 	{isParentExpanded}

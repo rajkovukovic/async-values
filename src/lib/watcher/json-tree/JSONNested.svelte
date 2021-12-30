@@ -59,8 +59,8 @@
 		<ul class:collapse={!expanded} on:click={expand}>
 			{#each slicedKeys as key, index}
 				<JSONNode
+					{depth}
 					key={getKey(key)}
-					depth={depth + 1}
 					isParentExpanded={expanded}
 					isParentArray={isArray}
 					value={expanded ? getValue(key) : getPreviewValue(key)}

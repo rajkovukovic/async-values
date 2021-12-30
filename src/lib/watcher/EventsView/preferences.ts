@@ -1,5 +1,5 @@
 import { BehaviorSubject } from 'rxjs';
-import { map, shareReplay, skip } from 'rxjs/operators';
+import { filter, map, shareReplay } from 'rxjs/operators';
 // import { browser } from '$app/env';
 import { TimeStampView } from '$lib';
 
@@ -10,13 +10,17 @@ export class BehaviorSubjectWithSet<T> extends BehaviorSubject<T> {
 }
 
 export const timestampViewStream = createLocalStorageStream(
-	TimeStampView.absoluteTime,
+	TimeStampView.sinceAppStart,
 	'TimeStampView',
 );
+
+export const appStartTimestamp = new BehaviorSubject(Date.now());
 
 export const showAppFullStateStream = createLocalStorageStream(true, 'ShowAppFullState');
 
 export const showEventDetailsStream = createLocalStorageStream(false, 'ShowEventDetails');
+
+export const jsonTreeExpandedLevel = createLocalStorageStream(1, 'JsonTreeExpandedLevel');
 
 const hiddenStreamsArray = createLocalStorageStream([], 'HiddenStreams');
 export const hiddenStreams = hiddenStreamsArray.pipe(
@@ -51,10 +55,11 @@ function createLocalStorageStream<T>(
 	localStorageKey = `async-value:watch:${localStorageKey}`;
 
 	let existingValue: T = null;
+	const localStorage = typeof window !== 'undefined' ? window?.localStorage : null;
 
 	// if (browser) {
 	try {
-		const raw = localStorage.getItem(localStorageKey);
+		const raw = localStorage?.getItem(localStorageKey);
 		if (typeof raw === 'string') existingValue = JSON.parse(raw);
 	} catch (_) {
 		// noop
@@ -64,8 +69,8 @@ function createLocalStorageStream<T>(
 	const stream = new BehaviorSubjectWithSet<T>(existingValue ?? initialValue);
 
 	stream
-		.pipe(skip(1))
-		.subscribe((value) => localStorage.setItem(localStorageKey, JSON.stringify(value)));
+		.pipe(filter((value) => localStorage?.getItem(localStorageKey) !== JSON.stringify(value)))
+		.subscribe((value) => localStorage?.setItem(localStorageKey, JSON.stringify(value)));
 
 	return stream;
 }
