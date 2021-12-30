@@ -19,7 +19,10 @@ files are in `dist` folder
 files are in `build` folder
 
 ## How to use Watcher in my project
+
 ```js
+import { watch, watchStream } from 'async-values';
+
 // activate plugin in the top level file of the project
 onMount(() => isDev && AVWatch.activate(true));
 
@@ -29,11 +32,11 @@ watchStream('userId', userId);
 
 // watch stream pipe chain
 const user = userId.pipe(
-  watchStream('user', 'beforeFetch'),
-  switchMap(userId => fromFetch('//my-api.com/users/' + userId)),
-  watchStream('user', 'afterFetch'),
-  switchMap(response => response.json()),
-  watchStream('user', 'afterParsing'),
+	watch('user', 'beforeFetch'),
+	switchMap((userId) => fromFetch('//my-api.com/users/' + userId)),
+	watch('user', 'afterFetch'),
+	switchMap((response) => response.json()),
+	watch('user', 'afterParsing')
 );
 
 // Press Ctrl + Alt to view the Watcher
