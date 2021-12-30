@@ -13,7 +13,7 @@
 		BehaviorSubjectWithSet,
 		switchMapWhenFulfilled,
 		watch,
-		watchStream
+		watchStream,
 	} from '$lib';
 	import UserList from './components/UserList.svelte';
 	import TodoList from './components/TodoList.svelte';
@@ -30,9 +30,9 @@
 		a: [recursiveObject],
 		b: 2,
 		c: {
-			d: { self: recursiveObject }
+			d: { self: recursiveObject },
 		},
-		m: new Map([['some key', recursiveObject]])
+		m: new Map([['some key', recursiveObject]]),
 	});
 
 	const recursiveDataStream = new BehaviorSubjectWithSet(recursiveObject);
@@ -41,12 +41,12 @@
 	const users = forceReFetch.pipe(
 		switchMapWhenFulfilled((shouldSucceed) =>
 			AsyncValue.fetchAndParseResponse(
-				`https://${shouldSucceed ? '' : 'no-'}jsonplaceholder.typicode.com/users`
-			)
+				`https://${shouldSucceed ? '' : 'no-'}jsonplaceholder.typicode.com/users`,
+			),
 		),
 		switchMap((av) => (!av.pending ? of(av).pipe(delay(fetchDelay * 1000)) : of(av))),
 		watch('users', ''),
-		shareReplay(1)
+		shareReplay(1),
 	);
 
 	const selectedUserId = new ReplaySubject<number>(1);
@@ -57,13 +57,13 @@
 			AsyncValue.fetchAndParseResponse(
 				`https://${
 					shouldSucceed ? '' : 'no-'
-				}jsonplaceholder.typicode.com/todos?userId=${selectedUserId}`
-			)
+				}jsonplaceholder.typicode.com/todos?userId=${selectedUserId}`,
+			),
 		),
 		switchMap((av) => (!av.pending ? of(av).pipe(delay(fetchDelay * 1000)) : of(av))),
 		startWith(AsyncValue.valueOnly(null)),
 		watch('selectedUserTodos', ''),
-		shareReplay(1)
+		shareReplay(1),
 	);
 </script>
 

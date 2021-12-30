@@ -24,7 +24,7 @@
 					id: event.id,
 					ordinal: event.ordinal,
 					timestamp: new Date(event.timestamp),
-					type: event.type
+					type: event.type,
 				};
 			case AVStreamEventType.avValue:
 			case AVStreamEventType.avError:
@@ -33,7 +33,7 @@
 					ordinal: event.ordinal,
 					timestamp: new Date(event.timestamp),
 					type: event.type,
-					data: event.data.error ?? event.data.value
+					data: event.data.error ?? event.data.value,
 				};
 			default:
 				return {
@@ -41,7 +41,7 @@
 					ordinal: event.ordinal,
 					timestamp: new Date(event.timestamp),
 					type: event.type,
-					data: event.data
+					data: event.data,
 				};
 		}
 	}
@@ -50,7 +50,7 @@
 		AVStreamEventType.value,
 		AVStreamEventType.error,
 		AVStreamEventType.avValue,
-		AVStreamEventType.avError
+		AVStreamEventType.avError,
 	]);
 </script>
 

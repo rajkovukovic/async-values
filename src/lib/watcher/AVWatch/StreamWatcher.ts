@@ -43,7 +43,7 @@ export class StreamWatcher {
 
 		if (!phase) {
 			throw new Error(
-				`StreamWatcher of name "${this.streamName}" does not have a phase named "${event.streamPhase}"`
+				`StreamWatcher of name "${this.streamName}" does not have a phase named "${event.streamPhase}"`,
 			);
 		}
 

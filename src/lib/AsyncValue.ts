@@ -21,8 +21,8 @@ export class AsyncValue<T> extends MultiStateAsyncValue<T> {
 					JSON.stringify({
 						value,
 						pending,
-						error
-					})
+						error,
+					}),
 			);
 	}
 
@@ -88,12 +88,12 @@ export class AsyncValue<T> extends MultiStateAsyncValue<T> {
 
 	static fetchAndParseResponse<T = any>(
 		input: string | Request,
-		init?: RequestInit
+		init?: RequestInit,
 	): Observable<AsyncValue<T>> {
 		return fromFetch(input, init).pipe(
 			switchMap((response) => response.json()),
 			map((value: T) => AsyncValue.valueOnly(value)),
-			startWith(AsyncValue.pendingOnly<T>())
+			startWith(AsyncValue.pendingOnly<T>()),
 		);
 	}
 }

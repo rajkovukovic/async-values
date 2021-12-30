@@ -18,7 +18,7 @@ describe('isEmptyValue return true when expected', function () {
 			-1,
 			Number.POSITIVE_INFINITY,
 			Number.NEGATIVE_INFINITY,
-			Number.NaN
+			Number.NaN,
 		];
 		falsyValues.forEach((value) => expect(isEmptyValue(value)).toBe(false));
 	});

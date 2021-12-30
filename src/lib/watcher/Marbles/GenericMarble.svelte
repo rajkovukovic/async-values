@@ -8,7 +8,7 @@
 		[AVStreamEventType.avValue, AVValueMarble],
 		[AVStreamEventType.complete, CompleteMarble],
 		[AVStreamEventType.error, ErrorMarble],
-		[AVStreamEventType.value, ValueMarble]
+		[AVStreamEventType.value, ValueMarble],
 	]);
 </script>
 

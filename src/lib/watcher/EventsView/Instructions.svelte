@@ -8,7 +8,7 @@
 	function generateSample(type: AVStreamEventType) {
 		return {
 			ordinal: 1,
-			type
+			type,
 		} as unknown as AVStreamEvent;
 	}
 
@@ -18,7 +18,7 @@
 		['AsyncValue.error', generateSample(AVStreamEventType.avError)],
 		['Plain Value event', generateSample(AVStreamEventType.value)],
 		['Stream error event', generateSample(AVStreamEventType.error)],
-		['Stream completed event', generateSample(AVStreamEventType.complete)]
+		['Stream completed event', generateSample(AVStreamEventType.complete)],
 	];
 </script>
 

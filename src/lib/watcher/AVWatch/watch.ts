@@ -20,7 +20,7 @@ function createOberver<T>(streamName: string, streamPhase: string): PartialObser
 
 		error: (error) => {
 			AVWatch.addEvent(
-				new AVStreamEvent(Date.now(), streamName, streamPhase, AVStreamEventType.error, error)
+				new AVStreamEvent(Date.now(), streamName, streamPhase, AVStreamEventType.error, error),
 			);
 		},
 
@@ -31,10 +31,10 @@ function createOberver<T>(streamName: string, streamPhase: string): PartialObser
 					streamName,
 					streamPhase,
 					AVStreamEventType.complete,
-					undefined
-				)
+					undefined,
+				),
 			);
-		}
+		},
 	};
 }
 

@@ -28,7 +28,7 @@ onMount(() => isDev && AVWatch.activate(true));
 
 // watch Subject
 const userId = new BehaviorSubject(0);
-watchStream('userId', userId);
+const subscription = watchStream('userId', userId);
 
 // watch stream pipe chain
 const user = userId.pipe(
@@ -36,7 +36,7 @@ const user = userId.pipe(
 	switchMap((userId) => fromFetch('//my-api.com/users/' + userId)),
 	watch('user', 'afterFetch'),
 	switchMap((response) => response.json()),
-	watch('user', 'afterParsing')
+	watch('user', 'afterParsing'),
 );
 
 // Press Ctrl + Alt to view the Watcher

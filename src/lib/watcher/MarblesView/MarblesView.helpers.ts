@@ -11,7 +11,7 @@ export function calcRowsLayout(
 	streams: StreamRenderingInfo[],
 	streamGroupHeaderHeight: number,
 	eventCellHeight: number,
-	streamGroupSpacing: number
+	streamGroupSpacing: number,
 ): Map<string, StreamRowLayout> {
 	return new Map(
 		streams.reduce((acc, stream) => {
@@ -27,8 +27,8 @@ export function calcRowsLayout(
 						header: true,
 						top: rowTop,
 						height: streamGroupHeaderHeight,
-						label: stream.name
-					}
+						label: stream.name,
+					},
 				]);
 
 				stream.phases.forEach((phase, index) => {
@@ -38,13 +38,13 @@ export function calcRowsLayout(
 							even: index % 2 !== 0,
 							top: rowTop + streamGroupHeaderHeight + index * eventCellHeight,
 							height: eventCellHeight,
-							label: phase
-						}
+							label: phase,
+						},
 					]);
 				});
 			}
 
 			return acc;
-		}, [])
+		}, []),
 	);
 }

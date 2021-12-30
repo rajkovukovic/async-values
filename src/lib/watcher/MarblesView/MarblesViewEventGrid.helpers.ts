@@ -30,6 +30,6 @@ export function rowLayoutsToDashData(rowLayouts: Map<string, StreamRowLayout>): 
 			}
 			return acc;
 		},
-		{ offset: 0, dashArray: '' }
+		{ offset: 0, dashArray: '' },
 	);
 }

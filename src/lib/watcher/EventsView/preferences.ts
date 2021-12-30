@@ -11,7 +11,7 @@ export class BehaviorSubjectWithSet<T> extends BehaviorSubject<T> {
 
 export const timestampViewStream = createLocalStorageStream(
 	TimeStampView.absoluteTime,
-	'TimeStampView'
+	'TimeStampView',
 );
 
 export const showAppFullStateStream = createLocalStorageStream(true, 'ShowAppFullState');
@@ -21,7 +21,7 @@ export const showEventDetailsStream = createLocalStorageStream(false, 'ShowEvent
 const hiddenStreamsArray = createLocalStorageStream([], 'HiddenStreams');
 export const hiddenStreams = hiddenStreamsArray.pipe(
 	map((hiddenStreamsArray) => new Set(hiddenStreamsArray)),
-	shareReplay(1)
+	shareReplay(1),
 );
 
 /**
@@ -46,7 +46,7 @@ export function toggleStreamVisibility(streamName: string): boolean {
  */
 function createLocalStorageStream<T>(
 	initialValue: T,
-	localStorageKey: string
+	localStorageKey: string,
 ): BehaviorSubjectWithSet<T> {
 	localStorageKey = `async-value:watch:${localStorageKey}`;
 

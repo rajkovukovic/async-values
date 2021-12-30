@@ -8,7 +8,7 @@
 		getAppStateAtEvent,
 		showAppFullStateStream,
 		showEventDetailsStream,
-		StreamRenderingInfo
+		StreamRenderingInfo,
 	} from '$lib';
 
 	export let selectedEvent: AVStreamEvent;
@@ -77,7 +77,7 @@
 									{/if}
 									{#if event}
 										{#key event?.id}
-												<EventTree {event} showDetails={$showEventDetailsStream}/>
+											<EventTree {event} showDetails={$showEventDetailsStream} />
 										{/key}
 									{/if}
 								</div>

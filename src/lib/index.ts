@@ -28,7 +28,7 @@ export * from './watcher/MarblesView/MarblesView.helpers';
 export * from './watcher/MarblesView/MarblesViewEventGrid.helpers';
 export { default as MarblesView } from './watcher/MarblesView/MarblesView.svelte';
 export { default as MarblesViewEventGrid } from './watcher/MarblesView/MarblesViewEventGrid.svelte';
-export { default as MarblesViewRowHeaders } from './watcher/MarblesView/MarblesViewRowHeaders.svelte';
+export { default as MarblesViewRows } from './watcher/MarblesView/MarblesViewRows.svelte';
 export { default as MarblesViewRowNames } from './watcher/MarblesView/MarblesViewRowNames.svelte';
 // watcher: EventsView
 export { default as Instructions } from './watcher/EventsView/Instructions.svelte';

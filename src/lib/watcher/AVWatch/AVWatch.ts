@@ -27,7 +27,7 @@ class AVWatchClass {
 			[...streamsMap.values()].map((streamWatcher) => {
 				streamWatcher.hidden = hiddenStreams.has(streamWatcher.streamName);
 				return streamWatcher;
-			})
+			}),
 		),
 		switchMap((streams) =>
 			combineLatest(
@@ -37,13 +37,13 @@ class AVWatchClass {
 						map((phaseNames) => ({
 							name: stream.streamName,
 							phases: phaseNames,
-							hidden: stream.hidden
-						}))
-					)
-				)
-			)
+							hidden: stream.hidden,
+						})),
+					),
+				),
+			),
 		),
-		shareReplay(1)
+		shareReplay(1),
 	);
 
 	constructor() {
@@ -119,7 +119,7 @@ class AVWatchClass {
 	public eventByIdOrOlder(
 		streamName: string,
 		streamPhase: string,
-		eventId: number
+		eventId: number,
 	): AVStreamEvent | null {
 		const phaseEvents = this._streams.value
 			?.get(streamName)
@@ -176,9 +176,9 @@ class AVWatchClass {
 				next: (EventsViewComponent) => {
 					this._eventsView = new EventsViewComponent({
 						target: document.body,
-						props: { visible: showWatcherOnMount }
+						props: { visible: showWatcherOnMount },
 					});
-				}
+				},
 			});
 	}
 

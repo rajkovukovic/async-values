@@ -4,5 +4,5 @@ export enum AVStreamEventType {
 	complete = 'complete',
 	avValue = 'avValue',
 	avPending = 'avPending',
-	avError = 'avError'
+	avError = 'avError',
 }

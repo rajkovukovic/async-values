@@ -3,13 +3,16 @@
 	import { asyncScheduler, Observable, BehaviorSubject } from 'rxjs';
 	import { distinctUntilChanged, map, shareReplay, throttleTime } from 'rxjs/operators';
 	import { afterUpdate } from 'svelte';
-	import { AVStreamEvent, hiddenStreams, MarblesViewRowNames, StreamRenderingInfo } from '$lib';
 	import {
+		AVStreamEvent,
 		AVWatch,
-		EventDetailsView,
 		calcRowsLayout,
-		MarblesViewRowHeaders,
-		MarblesViewEventGrid
+		EventDetailsView,
+		hiddenStreams,
+		MarblesViewEventGrid,
+		MarblesViewRowNames,
+		MarblesViewRows,
+		StreamRenderingInfo,
 	} from '$lib';
 
 	export let hidden = false;
@@ -18,7 +21,7 @@
 
 	const eventsStream: Observable<AVStreamEvent[]> = AVWatch.events.pipe(
 		throttleTime(850, asyncScheduler, { leading: true, trailing: true }),
-		shareReplay(1)
+		shareReplay(1),
 	);
 
 	const visibleStreams: Observable<StreamRenderingInfo[]> = AVWatch.visibleStreams;
@@ -55,7 +58,7 @@
 			? selectEvent(
 					AVWatch.eventInSamePhase(selectedEvent, -1)?.id ??
 						selectedEvent?.id ??
-						$eventsStream.length - 1
+						$eventsStream.length - 1,
 			  )
 			: selectLastEvent(selectedEvent ? selectedEvent.id - 1 : null);
 
@@ -85,26 +88,26 @@
 
 	const rowLayoutsStream = visibleStreams.pipe(
 		map((streams) =>
-			calcRowsLayout(streams, streamGroupHeaderHeight, eventCellHeight, streamGroupSpacing)
+			calcRowsLayout(streams, streamGroupHeaderHeight, eventCellHeight, streamGroupSpacing),
 		),
-		shareReplay(1)
+		shareReplay(1),
 	);
 
 	const gridWidthStream: Observable<number> = eventsStream.pipe(
 		map((events) => events.length * eventCellWidth),
 		distinctUntilChanged(),
-		shareReplay(1)
+		shareReplay(1),
 	);
 
 	const gridHeightStream: Observable<number> = rowLayoutsStream.pipe(
 		map((rowLayouts) =>
 			Array.from(rowLayouts.values()).reduce(
 				(acc, { top, height }) => (top + height > acc ? top + height : acc),
-				0
-			)
+				0,
+			),
 		),
 		distinctUntilChanged(),
-		shareReplay(1)
+		shareReplay(1),
 	) as Observable<number>;
 
 	const clientWidthStream = new BehaviorSubject(0);
@@ -116,7 +119,7 @@
 	$: animatedScrollProps = {
 		elementToScroll: scrollContainer,
 		maxDuration: 150,
-		speed: 500
+		speed: 500,
 	};
 
 	afterUpdate(() => {
@@ -128,7 +131,7 @@
 	function handleScroll(
 		event: UIEvent & {
 			currentTarget: EventTarget & HTMLDivElement;
-		}
+		},
 	) {
 		const delta = scrollContainer.scrollLeft - scrollPosition;
 		scrollPosition = scrollContainer.scrollLeft;
@@ -171,7 +174,7 @@
 <div class="marbles-view" class:hidden>
 	<div bind:clientWidth={$clientWidthStream} class="marbles-diagram">
 		{#if $visibleStreams}
-			<MarblesViewRowHeaders {rowLayoutsStream} />
+			<MarblesViewRows {rowLayoutsStream} />
 			<div bind:this={scrollContainer} class="scroll-container" on:scroll={handleScroll}>
 				<div
 					class="marbles-container"
