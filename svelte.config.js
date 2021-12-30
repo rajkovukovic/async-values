@@ -10,12 +10,12 @@ const config = {
 		// adapter: adapter(),
 		adapter: staticAdapter({
 			// base: "/async-values",
-			precompress: false
+			precompress: false,
 		}),
 
 		// hydrate the <div id="svelte"> element in src/app.html
-		target: '#svelte'
-	}
+		target: '#svelte',
+	},
 };
 
 export default config;

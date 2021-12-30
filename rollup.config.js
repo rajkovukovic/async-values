@@ -6,7 +6,8 @@ import { terser } from 'rollup-plugin-terser';
 import pkg from './package.json';
 import preprocess from 'svelte-preprocess';
 import rollupTypescript from '@rollup/plugin-typescript';
-import typescript2 from "rollup-plugin-typescript2"
+import typescript2 from 'rollup-plugin-typescript2';
+import ttypescript from 'ttypescript';
 
 // const devMode = false
 
@@ -18,15 +19,15 @@ const beforeTypescriptPlugins = [
 	svelte({
 		emitCss: false,
 		preprocess: preprocess({
-			typescript: tsconfig
-		})
+			typescript: tsconfig,
+		}),
 	}),
 	resolve({
 		browser: true,
-		dedupe: ['svelte']
+		dedupe: ['svelte'],
 	}),
 	commonjs(),
-]
+];
 
 const afterTypescriptPlugins = [
 	terser({
@@ -38,39 +39,46 @@ const afterTypescriptPlugins = [
 					// multiline comment
 					return /@licence/i.test(text);
 				}
-			}
+			},
 		},
 		mangle: false,
 		compress: {
-			pure_funcs: ['console.log', 'console.info']
-		}
-	})]
+			pure_funcs: ['console.log', 'console.info'],
+		},
+	}),
+];
 
 export default [
-	// use typescript2 for building d.ts files
+	/**
+	 *  use rollup-plugin-typescript2 for building d.ts files
+	 */
 	{
 		input: 'src/lib/index.ts',
 		treeshake: { moduleSideEffects: false },
-		output:
-			{ file: `${pkg.module}`, format: 'es', sourcemap: true },
+		output: { file: `${pkg.module}`, format: 'es', sourcemap: true },
 		plugins: [
 			...beforeTypescriptPlugins,
-			typescript2({ tsconfig: 'tsconfig.build.json' }),
+			typescript2({
+				tsconfig: 'tsconfig.build.json',
+				typescript: ttypescript,
+			}),
 			...afterTypescriptPlugins,
-		]
+		],
 	},
-	// use typescript for everything else
+	/**
+	 *  use @rollup/plugin-typescript for everything else
+	 */
 	{
 		input: 'src/lib/index.ts',
 		treeshake: { moduleSideEffects: false },
 		output: [
 			{ file: `${pkg.module}`, format: 'es', sourcemap: true },
-			{ file: `${pkg.main}`, format: 'umd', name: pkg.name, sourcemap: true }
+			{ file: `${pkg.main}`, format: 'umd', name: pkg.name, sourcemap: true },
 		],
 		plugins: [
 			...beforeTypescriptPlugins,
 			rollupTypescript({ tsconfig: 'tsconfig.build.json' }),
 			...afterTypescriptPlugins,
-		]
-	}
+		],
+	},
 ];
