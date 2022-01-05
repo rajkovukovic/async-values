@@ -1,4 +1,12 @@
-import { combineLatest, from, isObservable, merge, Observable, of } from 'rxjs';
+import {
+	combineLatest,
+	from,
+	isObservable,
+	merge,
+	Observable,
+	of,
+} from 'rxjs';
+import type { MonoTypeOperatorFunction } from 'rxjs';
 import { catchError, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
 import isPromise from 'is-promise';
 import { AsyncValue } from './AsyncValue';
@@ -33,7 +41,7 @@ export type AsyncLikeVoAV<T> = VoAV<T> | ObservableVoAV<T> | ObservableVoAV<T>;
  * returns true when value is not of type AsyncValue
  * or is an AsyncFalue and it is fulfilled
  */
-export function isFulfilledOrSync(value): boolean {
+export function isFulfilledOrSync(value: unknown): boolean {
 	return !(value instanceof AsyncValue) || value.isFulfilled;
 }
 
@@ -56,9 +64,9 @@ export function compareAsyncValues<T>(
 ): boolean {
 	return (
 		a1 === a2 ||
-		(a1.pending === a2.pending && a1.error === a2.error && compare
-			? compare(a1.value, a2.value)
-			: a1.value === a2.value)
+		(a1.pending === a2.pending &&
+			a1.error === a2.error &&
+			(compare ? compare(a1.value, a2.value) : a1.value === a2.value))
 	);
 }
 
@@ -123,7 +131,9 @@ export function mapToAsyncValue<T>(): (source: Observable<VoAV<T>>) => Observabl
  * if @compare function is provided, it
  * it will be used to compare value properites instead of ===
  */
-export function distinctAsyncValueUntilChanged<T>(compare?: (v1: T, v2: T) => boolean) {
+export function distinctAsyncValueUntilChanged<T>(
+	compare?: (v1: T, v2: T) => boolean,
+): MonoTypeOperatorFunction<AsyncValue<T>> {
 	return distinctUntilChanged((a1: AsyncValue<T>, a2: AsyncValue<T>) =>
 		compareAsyncValues(a1, a2, compare),
 	);
