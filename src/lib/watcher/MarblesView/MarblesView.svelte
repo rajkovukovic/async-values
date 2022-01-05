@@ -33,7 +33,7 @@
 		}
 	};
 
-	export const selectFirstEvent = (startingFromIndex: number) => {
+	export const selectFirstEvent = (startingFromIndex?: number) => {
 		for (let index = startingFromIndex ?? 0; index < $eventsStream.length; index++) {
 			const event = $eventsStream[index];
 			if (!$hiddenStreams.has(event.streamName)) {
@@ -43,7 +43,7 @@
 		}
 	};
 
-	export const selectLastEvent = (startingFromIndex: number) => {
+	export const selectLastEvent = (startingFromIndex?: number) => {
 		for (let index = startingFromIndex ?? $eventsStream.length - 1; index >= 0; index--) {
 			const event = $eventsStream[index];
 			if (!$hiddenStreams.has(event.streamName)) {

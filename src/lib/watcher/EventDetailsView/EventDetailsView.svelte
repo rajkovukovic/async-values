@@ -1,5 +1,7 @@
 <script lang="ts">
+	import animateScrollTo from 'animated-scroll-to';
 	import type { Observable } from 'rxjs';
+	import { afterUpdate } from 'svelte';
 	import { slide } from 'svelte/transition';
 	import {
 		AVStreamEvent,
@@ -29,9 +31,37 @@
 			? getAppStateAtEvent($visibleStreams, selectedEvent, $eventsStream)
 			: null;
 
-	function hiddenStreamsArray(streamName: string) {
-		throw new Error('Function not implemented.');
-	}
+	let eventViewContent: HTMLDivElement;
+	let lastScrolledTo = {
+		streamName: null,
+	};
+
+	afterUpdate(() => {
+		if (selectedEvent) {
+			if (
+				lastScrolledTo.streamName !== selectedEvent.streamName &&
+				$showAppFullStateStream &&
+				eventViewContent
+			) {
+			}
+			// delay scrollTo animation after svelte slide transition is completed
+			setTimeout(
+				() =>
+					animateScrollTo(document.getElementById(`stream-info-${selectedEvent.streamName}`), {
+						elementToScroll: eventViewContent,
+						// verticalOffset: 20,
+					}),
+				200,
+			);
+			lastScrolledTo = {
+				streamName: selectedEvent.streamName,
+			};
+		} else {
+			lastScrolledTo = {
+				streamName: null,
+			};
+		}
+	});
 </script>
 
 <div class="event-view">
@@ -56,22 +86,29 @@
 		</span>
 	</div>
 
-	<div class="event-view-content">
+	<div bind:this={eventViewContent} class="event-view-content">
 		{#if $showAppFullStateStream}
 			{#if appState}
 				{#each [...appState.entries()] as [streamName, phaseMap]}
-					<div class="stream-info" class:hidden={$hiddenStreams.has(streamName)}>
+					<div
+						id="stream-info-{streamName}"
+						class="stream-info"
+						class:hidden={$hiddenStreams.has(streamName)}
+						class:selected={selectedEvent?.streamName === streamName}
+					>
 						<div class="stream-name clickable" on:click={() => toggleStreamVisibility(streamName)}>
 							{streamName}
 						</div>
 						{#if !$hiddenStreams.has(streamName)}
 							{#each [...phaseMap.entries()] as [phaseName, event], index (phaseName)}
-								<div class="phase-info">
-									<span class="phase-name">
+								<div class="phase-info" class:selected={selectedEvent?.streamName === streamName}>
+									<div class="phase-name">
 										{phaseName}
-									</span>
+									</div>
 									{#if !event}
-										- no events
+										<span class="no-events">
+											- no events
+										</span>
 									{:else if !$showEventDetailsStream}
 										{#if event.type === AVStreamEventType.error || event.type === AVStreamEventType.avError}
 											<span style="color: red;">({event.type})</span>
@@ -159,6 +196,11 @@
 				filter: brightness(140%) grayscale(90%);
 			}
 		}
+		&.selected > .stream-name {
+			background: orange;
+			color: black;
+			font-weight: bold;
+		}
 	}
 
 	.stream-name {
@@ -171,14 +213,22 @@
 	.phase-info {
 		padding-top: 1em;
 		padding-left: 2ch;
+		&.selected {
+			background: rgba(255, 166, 0, 0.15);
+		}
 	}
 
 	.phase-name {
 		color: #bc80b3;
 	}
 
-	.event-tree,
+	// .event-tree,
 	.selected-event-view {
 		padding: 16px;
+	}
+
+	.no-events {
+		font-style: italic;
+		opacity: 0.3;
 	}
 </style>
