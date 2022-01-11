@@ -73,11 +73,11 @@
 		}
 		&.selected {
 			& > .row-rect {
-				stroke: rgba(255, 165, 0, 0.2);
+				stroke: rgba(var(--accentColorRGB), 0.2);
 			}
 			& .cell-rect {
 				stroke-width: 1px;
-				stroke: orange;
+				stroke: var(--accentColor);
 			}
 		}
 		&:hover {
@@ -85,7 +85,7 @@
 				stroke: rgba(255, 255, 255, 0.4);
 			}
 			& .cell-rect {
-				fill: rgba(255, 165, 0, 0.15);
+				fill: rgba(var(--accentColorRGB), 0.15);
 			}
 		}
 	}

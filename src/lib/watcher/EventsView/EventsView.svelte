@@ -80,6 +80,10 @@
 		color: white;
 		font-family: 'Courier New', Courier, monospace;
 		font-size: 12px;
+		--accentColorRGB: 255,165,0;
+		--accentColor: rgb(var(--accentColorRGB));
+		--errorColorRGB: 255,0,0;
+		--errorColor: rgb(var(--errorColorRGB));
 	}
 
 	.events-view:not(.visible) {

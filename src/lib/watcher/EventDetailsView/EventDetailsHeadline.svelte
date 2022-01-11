@@ -8,7 +8,7 @@
 
 <div>
 	{#if event.type === AVStreamEventType.error || event.type === AVStreamEventType.avError}
-		<span style="color: red;">({event.type})</span>
+		<span style="color: var(--errorColor);">({event.type})</span>
 	{:else if event.type === AVStreamEventType.complete || event.type === AVStreamEventType.avPending}
 		<span>({event.type})</span>
 	{/if}
