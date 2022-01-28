@@ -18,7 +18,7 @@
 	import UserList from './components/UserList.svelte';
 	import TodoList from './components/TodoList.svelte';
 
-	onMount(() => AVWatch.activate(true));
+	onMount(() => AVWatch.activate({ showHideShortcut: 'Alt + X', showWatcherOnMount: false }));
 
 	onDestroy(() => AVWatch.deactivate());
 

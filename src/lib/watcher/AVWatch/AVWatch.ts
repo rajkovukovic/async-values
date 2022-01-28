@@ -164,7 +164,7 @@ class AVWatchClass {
 	private _eventsView: EventsView = null;
 	private _eventsViewMountingSubscriber: Subscription = null;
 
-	public activate(showWatcherOnMount = false): void {
+	public activate({ showHideShortcut = null, showWatcherOnMount = false }: AVWatcherActivateOptions): void {
 		if (this._eventsViewMountingSubscriber && !this._eventsViewMountingSubscriber.closed) {
 			this.deactivate();
 		}
@@ -176,7 +176,7 @@ class AVWatchClass {
 				next: (EventsViewComponent) => {
 					this._eventsView = new EventsViewComponent({
 						target: document.body,
-						props: { visible: showWatcherOnMount },
+						props: { visible: showWatcherOnMount, showHideShortcut },
 					});
 				},
 			});
@@ -188,6 +188,11 @@ class AVWatchClass {
 		this._eventsView?.$destroy();
 		this._eventsView = null;
 	}
+}
+
+export interface AVWatcherActivateOptions {
+	showHideShortcut?: string;
+	showWatcherOnMount?: boolean;
 }
 
 export const AVWatch = new AVWatchClass();

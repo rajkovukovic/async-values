@@ -11,6 +11,8 @@ export * from './watcher/AVWatch/AVStreamEventType';
 // watcher: json-tree
 export * from './watcher/json-tree/Root.svelte';
 export { default as JSONTree } from './watcher/json-tree/Root.svelte';
+// watcher: KeyboardShortcut
+export * from './watcher/KeyboardShortcut/KeyboardShortcut';
 // watcher: Marbles
 export { default as MarbleInfo } from './watcher/Marbles/MarbleInfo.svelte';
 export { default as AVValueMarble } from './watcher/Marbles/AVValueMarble.svelte';

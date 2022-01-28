@@ -1,10 +1,13 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 
-	import { Instructions, MarblesView } from '$lib';
+	import { Instructions, KeyboardShortcut, MarblesView } from '$lib';
 
 	export let visible = false;
+	export let showHideShortcut: string;
 	export let showInstructions = false;
+
+	$: shortcut = new KeyboardShortcut(showHideShortcut || 'Ctrl + Alt + W');
 
 	onMount(() => setKeyboardShorcuts(true));
 	onDestroy(() => setKeyboardShorcuts(false));
@@ -12,7 +15,7 @@
 	function handleKeyDown(event: KeyboardEvent) {
 		let isShortcut = true;
 
-		if ((event.key === 'Alt' && event.ctrlKey) || (event.key === 'Control' && event.altKey)) {
+		if (shortcut?.matchFromEvent(event)) {
 			visible = !visible;
 		} else if (visible) {
 			switch (event.key) {
@@ -51,10 +54,10 @@
 		// if (browser) {
 		if (state) {
 			window?.addEventListener('keydown', handleKeyDown, true);
-			console.log('AsyncValues Watcher: keyboard shortcuts activated');
+			// console.log('AsyncValues Watcher: keyboard shortcuts activated');
 		} else {
 			window?.removeEventListener('keydown', handleKeyDown, true);
-			console.log('AsyncValues Watcher: keyboard shortcuts deactivated');
+			// console.log('AsyncValues Watcher: keyboard shortcuts deactivated');
 		}
 		// }
 	}
@@ -80,9 +83,9 @@
 		color: white;
 		font-family: 'Courier New', Courier, monospace;
 		font-size: 12px;
-		--accentColorRGB: 255,165,0;
+		--accentColorRGB: 255, 165, 0;
 		--accentColor: rgb(var(--accentColorRGB));
-		--errorColorRGB: 255,0,0;
+		--errorColorRGB: 255, 0, 0;
 		--errorColor: rgb(var(--errorColorRGB));
 	}
 
