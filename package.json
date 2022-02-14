@@ -1,6 +1,6 @@
 {
 	"name": "async-values",
-	"version": "0.2.8",
+	"version": "0.2.9",
 	"license": "MIT",
 	"author": "Rajko Vukovic",
 	"type": "module",
