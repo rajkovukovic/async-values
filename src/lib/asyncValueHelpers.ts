@@ -326,7 +326,7 @@ export function combineLatestWhenAllFulfilled<R, T1>(
 		| VoAV<R>
 		| PromiseLikeVoAV<R>
 		| ObservableVoAV<R>,
-): Observable<R>;
+): Observable<AsyncValue<R>>;
 
 export function combineLatestWhenAllFulfilled<R, T1, T2>(
 	sources: [ObservableInput<VoAV<T1>>, ObservableInput<VoAV<T2>>],
@@ -335,7 +335,7 @@ export function combineLatestWhenAllFulfilled<R, T1, T2>(
 		| VoAV<R>
 		| PromiseLikeVoAV<R>
 		| ObservableVoAV<R>,
-): Observable<R>;
+): Observable<AsyncValue<R>>;
 
 export function combineLatestWhenAllFulfilled<R, T1, T2, T3>(
 	sources: [ObservableInput<VoAV<T1>>, ObservableInput<VoAV<T2>>, ObservableInput<VoAV<T3>>],
@@ -344,7 +344,7 @@ export function combineLatestWhenAllFulfilled<R, T1, T2, T3>(
 		| VoAV<R>
 		| PromiseLikeVoAV<R>
 		| ObservableVoAV<R>,
-): Observable<R>;
+): Observable<AsyncValue<R>>;
 
 export function combineLatestWhenAllFulfilled<R, T1, T2, T3, T4>(
 	sources: [ObservableInput<VoAV<T1>>, ObservableInput<VoAV<T2>>, ObservableInput<VoAV<T3>>, ObservableInput<VoAV<T4>>],
@@ -353,7 +353,7 @@ export function combineLatestWhenAllFulfilled<R, T1, T2, T3, T4>(
 		| VoAV<R>
 		| PromiseLikeVoAV<R>
 		| ObservableVoAV<R>,
-): Observable<R>;
+): Observable<AsyncValue<R>>;
 
 export function combineLatestWhenAllFulfilled<R, T1, T2, T3, T4, T5>(
 	sources: [ObservableInput<VoAV<T1>>, ObservableInput<VoAV<T2>>, ObservableInput<VoAV<T3>>, ObservableInput<VoAV<T4>>, ObservableInput<VoAV<T5>>],
@@ -362,7 +362,7 @@ export function combineLatestWhenAllFulfilled<R, T1, T2, T3, T4, T5>(
 		| VoAV<R>
 		| PromiseLikeVoAV<R>
 		| ObservableVoAV<R>,
-): Observable<R>;
+): Observable<AsyncValue<R>>;
 
 export function combineLatestWhenAllFulfilled<R, T1, T2, T3, T4, T5, T6>(
 	sources: [ObservableInput<VoAV<T1>>, ObservableInput<VoAV<T2>>, ObservableInput<VoAV<T3>>, ObservableInput<VoAV<T4>>, ObservableInput<VoAV<T5>>, ObservableInput<VoAV<T6>>],
@@ -371,7 +371,7 @@ export function combineLatestWhenAllFulfilled<R, T1, T2, T3, T4, T5, T6>(
 		| VoAV<R>
 		| PromiseLikeVoAV<R>
 		| ObservableVoAV<R>,
-): Observable<R>;
+): Observable<AsyncValue<R>>;
 
 export function combineLatestWhenAllFulfilled<R, T1, T2, T3, T4, T5, T6, T7>(
 	sources: [ObservableInput<VoAV<T1>>, ObservableInput<VoAV<T2>>, ObservableInput<VoAV<T3>>, ObservableInput<VoAV<T4>>, ObservableInput<VoAV<T5>>, ObservableInput<VoAV<T6>>, ObservableInput<VoAV<T7>>],
@@ -380,7 +380,7 @@ export function combineLatestWhenAllFulfilled<R, T1, T2, T3, T4, T5, T6, T7>(
 		| VoAV<R>
 		| PromiseLikeVoAV<R>
 		| ObservableVoAV<R>,
-): Observable<R>;
+): Observable<AsyncValue<R>>;
 
 export function combineLatestWhenAllFulfilled<R, T1, T2, T3, T4, T5, T6, T7, T8>(
 	sources: [ObservableInput<VoAV<T1>>, ObservableInput<VoAV<T2>>, ObservableInput<VoAV<T3>>, ObservableInput<VoAV<T4>>, ObservableInput<VoAV<T5>>, ObservableInput<VoAV<T6>>, ObservableInput<VoAV<T7>>, ObservableInput<VoAV<T8>>],
@@ -389,7 +389,7 @@ export function combineLatestWhenAllFulfilled<R, T1, T2, T3, T4, T5, T6, T7, T8>
 		| VoAV<R>
 		| PromiseLikeVoAV<R>
 		| ObservableVoAV<R>,
-): Observable<R>;
+): Observable<AsyncValue<R>>;
 
 export function combineLatestWhenAllFulfilled<R, T1, T2, T3, T4, T5, T6, T7, T8, T9>(
 	sources: [ObservableInput<VoAV<T1>>, ObservableInput<VoAV<T2>>, ObservableInput<VoAV<T3>>, ObservableInput<VoAV<T4>>, ObservableInput<VoAV<T5>>, ObservableInput<VoAV<T6>>, ObservableInput<VoAV<T7>>, ObservableInput<VoAV<T8>>, ObservableInput<VoAV<T9>>],
@@ -398,7 +398,7 @@ export function combineLatestWhenAllFulfilled<R, T1, T2, T3, T4, T5, T6, T7, T8,
 		| VoAV<R>
 		| PromiseLikeVoAV<R>
 		| ObservableVoAV<R>,
-): Observable<R>;
+): Observable<AsyncValue<R>>;
 
 
 /**
