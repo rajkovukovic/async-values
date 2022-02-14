@@ -4,6 +4,7 @@ import {
 	isObservable,
 	merge,
 	Observable,
+	ObservableInput,
 	of,
 } from 'rxjs';
 import type { MonoTypeOperatorFunction } from 'rxjs';
@@ -318,6 +319,88 @@ export function switchMapWhenFulfilled<T, R>(
 	};
 }
 
+export function combineLatestWhenAllFulfilled<R, T1>(
+	[o1]: [ObservableInput<VoAV<T1>>],
+	combinerOrResult:
+		| ((sourceValues: [T1]) => VoAV<R> | PromiseLikeVoAV<R> | ObservableVoAV<R>)
+		| VoAV<R>
+		| PromiseLikeVoAV<R>
+		| ObservableVoAV<R>,
+): Observable<R>;
+
+export function combineLatestWhenAllFulfilled<R, T1, T2>(
+	sources: [ObservableInput<VoAV<T1>>, ObservableInput<VoAV<T2>>],
+	combinerOrResult:
+		| ((sourceValues: [T1, T2]) => VoAV<R> | PromiseLikeVoAV<R> | ObservableVoAV<R>)
+		| VoAV<R>
+		| PromiseLikeVoAV<R>
+		| ObservableVoAV<R>,
+): Observable<R>;
+
+export function combineLatestWhenAllFulfilled<R, T1, T2, T3>(
+	sources: [ObservableInput<VoAV<T1>>, ObservableInput<VoAV<T2>>, ObservableInput<VoAV<T3>>],
+	combinerOrResult:
+		| ((sourceValues: [T1, T2, T3]) => VoAV<R> | PromiseLikeVoAV<R> | ObservableVoAV<R>)
+		| VoAV<R>
+		| PromiseLikeVoAV<R>
+		| ObservableVoAV<R>,
+): Observable<R>;
+
+export function combineLatestWhenAllFulfilled<R, T1, T2, T3, T4>(
+	sources: [ObservableInput<VoAV<T1>>, ObservableInput<VoAV<T2>>, ObservableInput<VoAV<T3>>, ObservableInput<VoAV<T4>>],
+	combinerOrResult:
+		| ((sourceValues: [T1, T2, T3, T4]) => VoAV<R> | PromiseLikeVoAV<R> | ObservableVoAV<R>)
+		| VoAV<R>
+		| PromiseLikeVoAV<R>
+		| ObservableVoAV<R>,
+): Observable<R>;
+
+export function combineLatestWhenAllFulfilled<R, T1, T2, T3, T4, T5>(
+	sources: [ObservableInput<VoAV<T1>>, ObservableInput<VoAV<T2>>, ObservableInput<VoAV<T3>>, ObservableInput<VoAV<T4>>, ObservableInput<VoAV<T5>>],
+	combinerOrResult:
+		| ((sourceValues: [T1, T2, T3, T4, T5]) => VoAV<R> | PromiseLikeVoAV<R> | ObservableVoAV<R>)
+		| VoAV<R>
+		| PromiseLikeVoAV<R>
+		| ObservableVoAV<R>,
+): Observable<R>;
+
+export function combineLatestWhenAllFulfilled<R, T1, T2, T3, T4, T5, T6>(
+	sources: [ObservableInput<VoAV<T1>>, ObservableInput<VoAV<T2>>, ObservableInput<VoAV<T3>>, ObservableInput<VoAV<T4>>, ObservableInput<VoAV<T5>>, ObservableInput<VoAV<T6>>],
+	combinerOrResult:
+		| ((sourceValues: [T1, T2, T3, T4, T5, T6]) => VoAV<R> | PromiseLikeVoAV<R> | ObservableVoAV<R>)
+		| VoAV<R>
+		| PromiseLikeVoAV<R>
+		| ObservableVoAV<R>,
+): Observable<R>;
+
+export function combineLatestWhenAllFulfilled<R, T1, T2, T3, T4, T5, T6, T7>(
+	sources: [ObservableInput<VoAV<T1>>, ObservableInput<VoAV<T2>>, ObservableInput<VoAV<T3>>, ObservableInput<VoAV<T4>>, ObservableInput<VoAV<T5>>, ObservableInput<VoAV<T6>>, ObservableInput<VoAV<T7>>],
+	combinerOrResult:
+		| ((sourceValues: [T1, T2, T3, T4, T5, T6, T7]) => VoAV<R> | PromiseLikeVoAV<R> | ObservableVoAV<R>)
+		| VoAV<R>
+		| PromiseLikeVoAV<R>
+		| ObservableVoAV<R>,
+): Observable<R>;
+
+export function combineLatestWhenAllFulfilled<R, T1, T2, T3, T4, T5, T6, T7, T8>(
+	sources: [ObservableInput<VoAV<T1>>, ObservableInput<VoAV<T2>>, ObservableInput<VoAV<T3>>, ObservableInput<VoAV<T4>>, ObservableInput<VoAV<T5>>, ObservableInput<VoAV<T6>>, ObservableInput<VoAV<T7>>, ObservableInput<VoAV<T8>>],
+	combinerOrResult:
+		| ((sourceValues: [T1, T2, T3, T4, T5, T6, T7, T8]) => VoAV<R> | PromiseLikeVoAV<R> | ObservableVoAV<R>)
+		| VoAV<R>
+		| PromiseLikeVoAV<R>
+		| ObservableVoAV<R>,
+): Observable<R>;
+
+export function combineLatestWhenAllFulfilled<R, T1, T2, T3, T4, T5, T6, T7, T8, T9>(
+	sources: [ObservableInput<VoAV<T1>>, ObservableInput<VoAV<T2>>, ObservableInput<VoAV<T3>>, ObservableInput<VoAV<T4>>, ObservableInput<VoAV<T5>>, ObservableInput<VoAV<T6>>, ObservableInput<VoAV<T7>>, ObservableInput<VoAV<T8>>, ObservableInput<VoAV<T9>>],
+	combinerOrResult:
+		| ((sourceValues: [T1, T2, T3, T4, T5, T6, T7, T8, T9]) => VoAV<R> | PromiseLikeVoAV<R> | ObservableVoAV<R>)
+		| VoAV<R>
+		| PromiseLikeVoAV<R>
+		| ObservableVoAV<R>,
+): Observable<R>;
+
+
 /**
  * if any of @sources emits AsyncValue containing error,
  * let's call it sourceWithError,
@@ -339,7 +422,7 @@ export function switchMapWhenFulfilled<T, R>(
  * will be emitted
  */
 export function combineLatestWhenAllFulfilled<T extends any, R>(
-	sources: Observable<VoAV<T>>[],
+	sources: any[],
 	combinerOrResult:
 		| ((sourceValues: T[]) => VoAV<R> | PromiseLikeVoAV<R> | ObservableVoAV<R>)
 		| VoAV<R>
